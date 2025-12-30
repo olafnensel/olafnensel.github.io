@@ -44,6 +44,10 @@
   --heading-h3-size: 1.17em;
   --heading-h3-scale: 0.95;
 
+  /* CODE  */
+    --code-bg: #f2f3f5;
+    --code-text: #1d1d1f;
+
   /* Secondary Control (Inline-Steuerung) */
   --text-secondary: var(--color-muted);
   --text-secondary-size: 0.9em;
@@ -98,6 +102,10 @@
 
     --nav-pane-bg: rgba(255, 255, 255, 0.06);
     --nav-context-bg: rgba(255, 255, 255, 0.10);
+
+    /* ⬇️ NEU: Inline code */
+    --code-bg: rgba(255, 255, 255, 0.08);
+    --code-text: #f5f5f7;
   }
 }
 
@@ -119,6 +127,13 @@ html.force-dark {
   --heading-h1: #f5f5f7;
   --heading-h2: #f5f5f7;
   --heading-h3: #d1d1d6;
+
+  /* ⬇️ NEU: Inline code */
+  --code-bg: rgba(255, 255, 255, 0.08);
+  --code-text: #f5f5f7;
+}
+html.force-dark code {
+  border-color: var(--code-border);
 }
 
 /* ----------------------------------------------------- */
@@ -139,6 +154,22 @@ h3 {
   font-size: calc(var(--heading-h3-size) * var(--heading-h3-scale));
   color: var(--heading-h3);
   font-weight: var(--heading-weight-medium);
+}
+
+/* ================================================ */
+/* Inline code                                      */
+/* ================================================ */
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em;
+  padding: 0.15em 0.35em;
+  border: 1px solid transparent;
+  border-radius: 0.25em;
+  white-space: nowrap;
+
+  background-color: var(--code-bg);
+  color: var(--code-text);
 }
 
 /* ======================= END 1 ============================ */
@@ -1337,18 +1368,20 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
    Ziel:
    - ?start= und ähnliche Tokens sofort als „Code“ erkennbar
    - Apple-like: ruhig, keine harte Rahmenbox
-   - funktioniert in Light/Dark ohne eigene Farben
+   - Farben vollständig über Design-Tokens (Light/Dark)
 */
 .home code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", monospace;
   font-size: 0.9em;
 
   /* „Pill“-Anmutung wie im Hinweis-Kasten, aber inline */
   padding: 0.15em 0.35em;
   border-radius: 6px;
 
-  /* dezente Fläche (Light/Dark automatisch passend) */
-  background: rgba(0, 0, 0, 0.06);
+  /* Farben ausschließlich über Tokens */
+  background-color: var(--code-bg);
+  color: var(--code-text);
 
   /* keine Default-Rahmen/Unterstreichungen */
   border: none;
@@ -1360,11 +1393,6 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
   /* falls Zeilenumbruch: Box bleibt sauber */
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
-}
-
-/* Dark Mode: Fläche aufhellen (kein Alpha-Schwarz) */
-html.force-dark .home code {
-  background: rgba(255, 255, 255, 0.10);
 }
 
 /* --------------------------------------------------------- */
@@ -1535,10 +1563,10 @@ body.nav-focus-mode .nav-root-exit {
 */
 
 html.force-dark {
-  --color-text: #f5f5f7;
+  ---code-text: #f5f5f7;
   --color-muted: #a1a1a6;
-  --color-border: #3a3a3c;
-  --color-bg: #1c1c1e;
+  --code-border: rgba(255, 255, 255, 0.18);
+  --code-bg: rgba(255, 255, 255, 0.10);
   --color-accent: #7da6ff;
 
   /* Kontext-Hintergrund (Hover, Root-Current, Scope-Parent)
