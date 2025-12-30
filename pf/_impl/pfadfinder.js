@@ -221,10 +221,6 @@ function syncAriaCurrent() {
    [BLOCK 4] FIXED PARENT (SCOPE MIRROR)
    ====================================================================== */
 
-/* ======================================================================
-   [BLOCK 4] FIXED PARENT (SCOPE MIRROR)
-   ====================================================================== */
-
 const fixedParentEl = () => qs('.nav-fixed-parent');
 const fixedParentBtn = () => qs('.nav-fixed-parent-button');
 
@@ -266,7 +262,6 @@ document.addEventListener('click', e => {
 });
 
 /* ============================ END BLOCK 4 ============================ */
-
 
 /* ======================================================================
    [BLOCK 5] STATE HANDLING

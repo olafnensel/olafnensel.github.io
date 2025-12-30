@@ -80,6 +80,27 @@
   --gap-block-medium: 3rem;
 }
 
+/* ========================================================= */
+/* SYSTEM DARK MODE (Default – ohne DEV Override)            */
+/* ========================================================= */
+
+@media (prefers-color-scheme: dark) {
+  html:not(.force-light):not(.force-dark) {
+    --color-bg: #1c1c1e;
+    --color-text: #f5f5f7;
+    --color-muted: #a1a1a6;
+    --color-border: #3a3a3c;
+    --color-accent: #7da6ff;
+
+    --heading-h1: #f5f5f7;
+    --heading-h2: #f5f5f7;
+    --heading-h3: #d1d1d6;
+
+    --nav-pane-bg: rgba(255, 255, 255, 0.06);
+    --nav-context-bg: rgba(255, 255, 255, 0.10);
+  }
+}
+
 /* --------------------------------------------------------- */
 /* Dark Mode Override – Apple UI                             */
 /* --------------------------------------------------------- */
@@ -324,26 +345,6 @@ html.force-dark .skip-link {
 /* ======================= END 4 ============================ */
 
 /* ========================================================= */
-/* 4a. RESPONSIVE – LAYOUT BREAKPOINT (SIDEBAR -> STACK)     */
-/* ========================================================= */
-/*
-   Ziel:
-   - bei schmalen Viewports: Sidebar oben, Content darunter
-   - ohne JS/XSL-Änderungen
-   - keine neuen UI-Patterns (kein Burger-Menü)
-*/
-
-@media (max-width: 56rem) {
-  .layout {
-    flex-direction: column;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-  }
-}
-
-/* ======================= END 4a =========================== */
-
-/* ========================================================= */
 /* 5. NAVIGATION – CONTAINER                                 */
 /* ========================================================= */
 
@@ -390,9 +391,75 @@ html.force-dark {
 
 /* ---------------------- END 5.2 ------------------------- */
 
-
 /* ======================= END 5 =========================== */
 
+/* ========================================================= */
+/* 5.3 RESPONSIVE – MOBILE NAV HEIGHT LIMIT                  */
+/* ========================================================= */
+/*
+   Ziel:
+   - Mobile Stack:
+       Navigation oben
+       Content darunter sofort sichtbar
+   - Navigation darf NICHT die komplette Viewporthöhe belegen
+   - Navigation bleibt intern scrollbar (wie Desktop)
+*/
+
+@media (max-width: 56rem) {
+
+  /* Seite darf wieder scrollen */
+  body {
+    overflow: auto;
+  }
+
+  /* Layout stapeln */
+  .layout {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    width: 100%;
+    align-items: stretch;
+
+    /* 🔑 kein internes Clipping */
+    overflow: visible;
+  }
+
+/* Navigation: mobile – volle Breite, begrenzte Höhe, eigene Scrollzone */
+@media (max-width: 56rem) {
+
+  .nav-pane {
+    flex: 0 0 auto;
+
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+
+    border-radius: 0;
+
+    /* Höhe begrenzen, damit Content sichtbar bleibt */
+    max-height: 50vh;
+
+    /* Scrollbar NUR bei Bedarf */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+}
+
+  /* Scroll-Container deaktivieren */
+  .nav-scroll {
+    overflow: visible;
+  }
+
+  /* Content fließt normal */
+  main {
+    overflow: visible;
+    max-width: none;
+    margin: 0;
+  }
+}
+
+/* ======================= END 5.3 =========================== */
 
 /* ========================================================= */
 /* 6. NAVIGATION – SCROLLBEREICH                              */
@@ -405,7 +472,6 @@ html.force-dark {
   /* Visuelle Ruhe: Highlight klebt nicht am Rand */
   padding: 0 .5rem;
 }
-
 
 /* ======================= END 6 ============================ */
 
@@ -623,18 +689,13 @@ main {
   flex: 1 1 auto;
   overflow-y: auto;
 
-  /* Flex-Kinder dürfen schrumpfen → verhindert horizontales „Sprengen“ */
-  min-width: 0;
+  /* ❌ KEINE Breitenbegrenzung mehr hier */
+  max-width: none;
+  margin: 0;
 
-  /* Leselänge begrenzen */
-  max-width: 68ch;
-
-  /* Fokus-Ringe brauchen „Luft“, sonst werden sie am Rand abgeschnitten */
+  /* Fokus-Luft bleibt */
   box-sizing: border-box;
   padding-inline: 0.35rem;
-
-  /* horizontal zentrieren */
-  margin: 0.1rem auto 0;
 }
 
 /* Content-Sektionen */
@@ -700,6 +761,15 @@ main {
 }
 
 /* ======================= END 13 =========================== */
+
+/* ========================================================= */
+/* 13.0 JUMPMARKS – Content Wrapper – Leselänge.             */
+/* ========================================================= */
+.content-wrap {
+  max-width: 68ch;
+  margin: 0.1rem auto 0;
+}
+/* ======================= END 13.0 =========================== */
 
 /* ========================================================= */
 /* 13a. JUMPMARKS – CONTROL AREA (CONTENT-NAH, RUHIG)        */
@@ -1507,6 +1577,17 @@ html.force-dark .nav-pane button:focus-visible {
    - bleibt bei Scrollen sichtbar
 */
 
+/* DEV MODE – VISIBILITY GATE ------------------------------ */
+/* Default: DEV-Tools AUS */
+.dev-tools {
+  display: none;
+}
+
+/* Nur explizit bei data-dev="true" sichtbar */
+body[data-dev="true"] .dev-tools {
+  display: flex;
+}
+
 .dev-tools {
   /* position: fixed → aus dem Flow */
   position: fixed;
@@ -1515,7 +1596,6 @@ html.force-dark .nav-pane button:focus-visible {
 
   z-index: 1000;
 
-  display: flex;
   gap: .75rem;
 
   /* keinerlei Einfluss auf Layout */
