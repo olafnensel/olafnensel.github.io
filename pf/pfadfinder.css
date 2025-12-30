@@ -1,6 +1,1598 @@
-/* Pfadfinder – Basis */
+/* ========================================================= */
+/* Pfadfinder – Basis-CSS.                                   */
+/* ========================================================= */
+
+/* ========================================================= */
+/* 1. ROOT – Farben, Typografie, Geometrie                   */
+/* ========================================================= */
+
+:root {
+  --font-base:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  /* ----------------------------------------------------- */
+  /* Base Colors (Light Mode)                              */
+  /* ----------------------------------------------------- */
+  --color-text: #1d1d1f;
+  /* Apple Primary Text */
+  --color-muted: #6e6e73;
+  --color-border: #e5e5ea;
+  --color-bg: #ffffff;
+  --color-accent: #0a58ca;
+
+  --header-height: 6.5rem;
+
+  /* Einheitliche Klick- & Highlight-Zone */
+  --nav-hit-padding-x: .75rem;
+/* ===================================================== */
+  /* TYPOGRAPHY TOKENS – BODY & INLINE                      */
+  /* ===================================================== */
+
+  /* Body Text */
+  --text-primary: var(--color-text);
+  --text-primary-weight: 400;
+  --text-primary-line-height: 1.55;
+
+  /* H3  */
+  --heading-h3-size: 1.17em;
+  --heading-h3-scale: 0.95;
+
+  /* Secondary Control (Inline-Steuerung) */
+  --text-secondary: var(--color-muted);
+  --text-secondary-size: 0.9em;
+  --text-secondary-weight: 400;
+
+  /* Meta Information */
+  --text-muted-weak: var(--color-muted);
+  --text-muted-size: 0.8em;
+  --text-muted-weight: 400;
+
+  /* ===================================================== */
+  /* HEADING TOKENS – Apple UI (Light Mode)                 */
+  /* ===================================================== */
+  /*
+     Prinzip:
+     - NICHT schwarz
+     - minimal dunkler als Body
+     - Differenz wirkt über Größe & Gewicht
+  */
+
+  --heading-h1: #2c2c2e;
+  --heading-h2: #2c2c2e;
+  --heading-h3: #3a3a3c;
+
+  --heading-weight-strong: 600;
+  --heading-weight-medium: 500;
+
+  /* ===================================================== */
+  /* Spacing Tokens                                       */
+  /* ===================================================== */
+  --gap-inline-tight: 0.35em;
+  --gap-inline-loose: 0.6em;
+  --gap-block-small: 0.75rem;
+  --gap-block-medium: 3rem;
+}
+
+/* --------------------------------------------------------- */
+/* Dark Mode Override – Apple UI                             */
+/* --------------------------------------------------------- */
+/*
+   Wichtig:
+   - greift auf html.force-dark (tatsächlich aktiv)
+   - Headings fast weiß, aber NIE rein weiß
+*/
+
+html.force-dark {
+  --color-bg: #1c1c1e;
+  --color-text: #f5f5f7;
+  --color-muted: #a1a1a6;
+  --color-border: #3a3a3c;
+
+  --heading-h1: #f5f5f7;
+  --heading-h2: #f5f5f7;
+  --heading-h3: #d1d1d6;
+}
+
+/* ----------------------------------------------------- */
+/* HEADING APPLICATION                                   */
+/* ----------------------------------------------------- */
+
+h1 {
+  color: var(--heading-h1);
+  font-weight: var(--heading-weight-strong);
+}
+
+h2 {
+  color: var(--heading-h2);
+  font-weight: var(--heading-weight-strong);
+}
+
+h3 {
+  font-size: calc(var(--heading-h3-size) * var(--heading-h3-scale));
+  color: var(--heading-h3);
+  font-weight: var(--heading-weight-medium);
+}
+
+/* ======================= END 1 ============================ */
+
+/* ========================================================= */
+/* 2. GLOBALER LAYOUTKONTEXT                                 */
+/* ========================================================= */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 
 body {
-  font-family: system-ui, sans-serif;
-  margin: 2rem;
+  font-family: var(--font-base);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-text);
+  background: var(--color-bg);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
+
+/* ======================= END 2 ============================ */
+
+/* ========================================================= */
+/* 2a. A11Y – SKIP LINK                                      */
+/* ========================================================= */
+/*
+   Ziel:
+   - „Zum Inhalt springen“ ist für Tastatur-User sofort erreichbar
+   - im Normalzustand unsichtbar, erscheint bei Fokus
+   - Apple-like: ruhig, keine harte Box, aber klar erkennbar
+   - funktioniert in Light/Dark ohne separate Farbwelten
+*/
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+
+  /* nur bei Fokus sichtbar */
+  opacity: 0;
+  pointer-events: none;
+
+  /* typografisch wie UI-Link, aber als Control */
+  font-size: 0.9rem;
+  line-height: 1.2;
+
+  padding: 0.45em 0.75em;
+  border-radius: 10px;
+
+  color: var(--color-accent);
+  background: rgba(0, 0, 0, 0.05);
+
+  text-decoration: none;
+
+  /* über Header/Content */
+  z-index: 1100;
+
+  /* sanft */
+  transform: translateY(-0.25rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Dark Mode: Fläche aufhellen (kein Alpha-Schwarz) */
+html.force-dark .skip-link {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ======================= END 2a =========================== */
+
+/* ========================================================= */
+/* 3. PAGE HEADER – Textblock-Ausrichtung                    */
+/* ========================================================= */
+/*
+   Ziel:
+   - Icon als Marker links
+   - H1 + Subline als gemeinsamer Textblock
+   - Subline beginnt unter dem Text („Pfadfinder“), nicht unter dem Icon
+   - Icon optisch auf H1-Zeile ausrichten (nicht Block-Mitte)
+*/
+
+.page-header {
+  box-sizing: border-box;
+  height: var(--header-height);
+
+  display: flex;
+  align-items: center;
+
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  border-bottom: 1px solid var(--color-border);
+
+  flex: 0 0 var(--header-height);
+
+  /* Icon soll wie H1 wirken (currentColor) */
+  color: var(--heading-h1);
+}
+
+/* --------------------------------------------- */
+/* Header Row: Icon + Textblock                  */
+/* --------------------------------------------- */
+
+.header-row {
+  display: flex;
+  align-items: flex-start;
+
+  /* em-Basis wie H1, damit das Icon korrekt skaliert */
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+/* --------------------------------------------- */
+/* Header Icon                                   */
+/* --------------------------------------------- */
+
+.header-icon {
+  width: 0.9em;
+  height: 0.9em;
+
+  margin-right: 0.6ch;
+
+  /* optische Ausrichtung zur H1-Zeile (nicht zur Blockmitte) */
+  margin-top: 0.1rem;
+  transform: translateY(0.07em); /* Finetuning */
+
+  color: currentColor;
+  pointer-events: none;
+
+  flex: 0 0 auto;
+  display: inline-block;
+}
+
+/* --------------------------------------------- */
+/* Header Textblock                              */
+/* --------------------------------------------- */
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* H1 */
+.header-text h1 {
+  margin: 0;
+
+  font-size: 1.6rem;
+  font-weight: var(--heading-weight-strong);
+  line-height: 1.2;
+
+  color: var(--heading-h1);
+}
+
+/* Subline */
+.header-text .header-subline {
+  margin-top: 0.25rem;
+  padding-left: 0.05em; /* Subline Finetuning horizontal */
+  font-size: 0.9rem;
+  line-height: 1.4;
+
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* ======================= END 3 ============================ */
+
+/* ========================================================= */
+/* 4. HAUPTLAYOUT                                            */
+/* ========================================================= */
+
+.layout {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  overflow: hidden;
+}
+/* ======================= END 4 ============================ */
+
+/* ========================================================= */
+/* 4a. RESPONSIVE – LAYOUT BREAKPOINT (SIDEBAR -> STACK)     */
+/* ========================================================= */
+/*
+   Ziel:
+   - bei schmalen Viewports: Sidebar oben, Content darunter
+   - ohne JS/XSL-Änderungen
+   - keine neuen UI-Patterns (kein Burger-Menü)
+*/
+
+@media (max-width: 56rem) {
+  .layout {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* ======================= END 4a =========================== */
+
+/* ========================================================= */
+/* 5. NAVIGATION – CONTAINER                                 */
+/* ========================================================= */
+
+/* --------------------------------------------------------- */
+/* 5.1 Navigation Pane – Grundlayout                         */
+/* --------------------------------------------------------- */
+/*
+   Enthält die komplette Navigation (Root + Scope).
+   Abgrenzung erfolgt ausschließlich über Hintergrundfarbe
+   und Border-Radius – ohne Rahmen oder Schatten.
+*/
+
+.nav-pane {
+  flex: 0 0 240px;
+  max-width: 260px;
+  display: flex;
+  flex-direction: column;
+
+  background: var(--nav-pane-bg);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ---------------------- END 5.1 ------------------------- */
+
+
+/* --------------------------------------------------------- */
+/* 5.2 Navigation Pane – Design Tokens                       */
+/* --------------------------------------------------------- */
+/*
+   Light- und Dark-Mode definieren den Pane-Hintergrund
+   symmetrisch:
+   - Light: leicht dunkler als Seitenhintergrund
+   - Dark : leicht heller als Seitenhintergrund
+*/
+
+:root {
+  --nav-pane-bg: rgba(0, 0, 0, 0.03);
+}
+
+html.force-dark {
+  --nav-pane-bg: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------------------- END 5.2 ------------------------- */
+
+
+/* ======================= END 5 =========================== */
+
+
+/* ========================================================= */
+/* 6. NAVIGATION – SCROLLBEREICH                              */
+/* ========================================================= */
+
+.nav-scroll {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  /* Visuelle Ruhe: Highlight klebt nicht am Rand */
+  padding: 0 .5rem;
+}
+
+
+/* ======================= END 6 ============================ */
+
+
+/* ========================================================= */
+/* 7. NAVIGATION – STRUKTUR                                  */
+/* ========================================================= */
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin: .15rem 0;
+}
+
+
+/* ======================= END 7 ============================ */
+
+
+/* ========================================================= */
+/* 8. NAVIGATION – BUTTON-GEOMETRIE (light/dark konsistent)  */
+/* ========================================================= */
+
+.nav-pane button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: .3rem var(--nav-hit-padding-x);
+  line-height: 1.25;
+
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Hover-Farbe wird bewusst aus Variable abgeleitet,
+   damit sie im Dark-Mode nicht „schwarz klebt“. */
+.nav-pane button:hover {
+  background: var(--nav-context-bg);
+}
+
+
+/* ======================= END 8 ============================ */
+
+
+/* ========================================================= */
+/* 9. Navigation – Zustände                                  */
+/* ========================================================= */
+/* BEGIN SECTION 9 ========================================= */
+
+/* --------------------------------------------------------- */
+/* 9.1 Grundfarben                                           */
+/* --------------------------------------------------------- */
+
+:root {
+  --nav-active-bg: #e5efff;
+  /* Blau – aktives Ziel */
+  --nav-context-bg: rgba(0, 0, 0, 0.06);
+  /* Grau – Kontext */
+  --nav-active-color: var(--color-accent);
+}
+
+/* ---------------------- END 9.1 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 9.2 ROOT-MODE – Root-Current (persistent)                 */
+/* --------------------------------------------------------- */
+
+/* Root-Parent = Kontext → Grau */
+body:not(.nav-focus-mode) .nav-item.is-root-current:not(.is-root-leaf)>button {
+  background: var(--nav-context-bg);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Root-Leaf = aktives Ziel → Blau */
+body:not(.nav-focus-mode) .nav-item.is-root-current.is-root-leaf>button {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-color);
+  font-weight: 600;
+}
+
+/* ---------------------- END 9.2 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 9.3 SCOPE-MODE – Scope-Parent & Scope-Leaf                */
+/* --------------------------------------------------------- */
+
+/* Scope-Parent = Kontext → Grau */
+body.nav-focus-mode .nav-item.is-scope-parent>button {
+  background: var(--nav-context-bg);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* Aktives Scope-Leaf = Ziel → Blau */
+body.nav-focus-mode .nav-item.is-scope-leaf.active>button {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-color);
+  font-weight: 600;
+}
+
+/* ---------------------- END 9.3 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 9.4 Hover (nicht aktiv, light/dark konsistent)            */
+/* --------------------------------------------------------- */
+
+/* Hover-Hintergrund wird bewusst über Kontext-Variable
+   gesteuert, damit er im Dark-Mode AUFHELLT statt abdunkelt. */
+.nav-pane button:hover:not(.active) {
+  background: var(--nav-context-bg);
+}
+
+/* ---------------------- END 9.4 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 9.5 Fokus (Tastatur) – bewusste UX-Entscheidung           */
+/* --------------------------------------------------------- */
+
+/* Fokus wird bewusst NUR bei Tastaturnavigation hervorgehoben.
+   Der ARIA-Zustand (aria-expanded) wird NICHT dauerhaft gestylt,
+   um Mausbedienung ruhig zu halten und visuelles Rauschen zu vermeiden.
+   Screenreader erhalten den Zustand weiterhin vollständig. */
+.nav-pane button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  font-weight: 600;
+}
+
+/* END SECTION 9 =========================================== */
+
+/* ========================================================= */
+/* 10. ICON + LABEL (INHALTLICHE STRUKTUR)                   */
+/* ========================================================= */
+
+.nav-pane .nav-icon {
+  width: 1ch;
+  flex: 0 0 1ch;
+  text-align: center;
+}
+
+.nav-pane .nav-label {
+  flex: 1 1 auto;
+}
+
+
+/* --------------------------------------------------------- */
+/* Hierarchie-Einrückung: NUR Label, nie Button              */
+/* --------------------------------------------------------- */
+
+.nav-item .nav-item>button .nav-label {
+  padding-left: 1.5ch;
+}
+
+/* ======================= END 10 =========================== */
+
+/* ========================================================= */
+/* 11. PARENT-BUTTONS (CHEVRON)                              */
+/* ========================================================= */
+
+.nav-toggle {
+  padding-left: calc(var(--nav-hit-padding-x) + 1ch + 0.6em);
+  padding-right: var(--nav-hit-padding-x);
+}
+
+.nav-toggle>.nav-icon::before {
+  content: '›';
+  opacity: 0.6;
+  transition: transform .15s ease, opacity .15s ease;
+}
+
+.nav-toggle[aria-expanded="true"]>.nav-icon::before {
+  transform: rotate(90deg);
+  opacity: .9;
+}
+
+
+/* ======================= END 11 =========================== */
+
+
+/* ========================================================= */
+/* 12. ROOT-MODE – AUFKLAPPEN                                */
+/* ========================================================= */
+
+.nav-item>.nav-children {
+  display: none;
+  margin-left: 0;
+  /* ❗️keine Layout-Verschiebung mehr */
+}
+
+.nav-item.open>.nav-children {
+  display: block;
+}
+
+/* ========================================================= */
+/* 13. CONTENT                                               */
+/* ========================================================= */
+/*
+   Rolle dieses Blocks:
+   - trennt Header-Zone und Content-Zone explizit
+   - EIN EINZIGER vertikaler Startabstand
+   - unabhängig von Jumpmarks und Entry-Struktur
+   - robust gegen lange/untrennbare Strings (Mobile/kleine Viewports)
+*/
+
+main {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  /* Flex-Kinder dürfen schrumpfen → verhindert horizontales „Sprengen“ */
+  min-width: 0;
+
+  /* Leselänge begrenzen */
+  max-width: 68ch;
+
+  /* Fokus-Ringe brauchen „Luft“, sonst werden sie am Rand abgeschnitten */
+  box-sizing: border-box;
+  padding-inline: 0.35rem;
+
+  /* horizontal zentrieren */
+  margin: 0.1rem auto 0;
+}
+
+/* Content-Sektionen */
+.collection-section {
+  display: none;
+}
+
+.collection-section.active {
+  display: block;
+}
+
+/* --------------------------------------------- */
+/* Collection Header                             */
+/* --------------------------------------------- */
+
+.collection-header {
+  margin-bottom: 0;
+  /* bewusst neutral */
+}
+
+.collection-header>h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* --------------------------------------------- */
+/* Collection Body – EINZIGE Content-Grenze       */
+/* --------------------------------------------- */
+
+.collection-body {
+  margin-top: var(--gap-block-medium);
+}
+
+/* Jumpmarks dürfen die Grenze NICHT beeinflussen */
+.collection-body>.jumpmarks {
+  margin-top: 0;
+  margin-bottom: var(--gap-block-medium);
+}
+
+/* Einheitlicher Abstand vom Header zum ersten Inhalt */
+.collection-body> :first-child {
+  margin-top: var(--gap-block-medium);
+}
+
+/* --------------------------------------------- */
+/* Overflow-Schutz (nur Content, nicht Jumpmarks/Nav) */
+/* --------------------------------------------- */
+/*
+   Ziel:
+   - extrem lange/untrennbare Tokens (z.B. XXXXX..., sehr lange URLs)
+     dürfen NICHT die Spalte sprengen
+   - normale Texte bleiben optisch unverändert
+*/
+.entry-title,
+.entry-trail,
+.entry-trail a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ======================= END 13 =========================== */
+
+/* ========================================================= */
+/* 13a. JUMPMARKS – CONTROL AREA (CONTENT-NAH, RUHIG)        */
+/* ========================================================= */
+/*
+   Ziel (Apple-like Web, plattformübergreifend):
+   - sekundäre Steuerung, kein Container
+   - Nähe zu H2 durch Stil, NICHT durch Geometrie
+   - KEINE Box-, Rahmen- oder Navigations-Anmutung
+   - unveränderter vertikaler Rhythmus (Block 13 bleibt gültig)
+*/
+
+/* Container */
+.jumpmarks {
+  margin-inline: 0;
+
+  /* KEIN Rahmen, KEINE Fläche → kein Block-Start-Erwartung */
+  padding: 0;
+  /* bewusst flach */
+
+  /* Typografie: UI-nah, aber nicht Meta-klein */
+  font-size: 0.9rem;
+  line-height: 1.4;
+
+  /* Ruhiger als Content, stärker als Meta */
+  color: var(--text-secondary);
+
+  /* Keine visuelle Kapselung */
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+
+/* Jumpmark-Links */
+.jumpmarks a {
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* „Pudding“ für Fokus-Ring ohne Layout-Jump */
+  display: inline-block;
+  padding: 0.05em 0.2em;
+  border-radius: 3px;
+}
+
+/* Hover: klare, aber ruhige Affordance */
+.jumpmarks a:hover {
+  text-decoration: underline;
+}
+
+/* Fokus: Ring + leichtes Cushion für Lesbarkeit */
+.jumpmarks a:focus-visible {
+  text-decoration: underline;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+html.force-dark .jumpmarks a:focus-visible {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* Trennzeichen */
+.jumpmark-sep {
+  margin: 0 0.6ch;
+  color: var(--text-secondary);
+}
+
+/* ======================= END 13a ========================== */
+
+/* ========================================================= */
+/* 13b. ENTRY – TYPOGRAFIE (elementnah)                      */
+/* ========================================================= */
+/*
+   Ziel:
+   - reine Typografie, keine Rhythmussteuerung
+   - H3 wirkt wie Teil des Fließtextes
+   - KEINE Abstände nach oben oder unten
+   - Zeilenhöhe exakt wie Trail
+*/
+
+/* Entry-Titel */
+.entry-title {
+  margin: 0;
+  /* WICHTIG: keinerlei Eigenabstand */
+  font-weight: 600;
+  line-height: 1.55;
+  /* identisch zu Trail */
+}
+
+/* Trail-Typografie */
+.entry-trail {
+  line-height: 1.55;
+}
+
+/* ======================= END 13b ========================== */
+
+/* ========================================================= */
+/* 13c. ENTRY-INNER – RHYTHMUS                               */
+/* ========================================================= */
+/*
+   Ziel:
+   - EIN Rhythmus-Ort für vertikale Abstände
+   - Abstand zwischen Entries, nicht innerhalb
+   - verhindert Margin-Collapse zuverlässig
+*/
+
+/* Innerer Layout-Kontext eines Entry */
+.entry-inner {
+  display: flow-root;
+  /* verhindert Margin-Collapse */
+}
+
+/* KEIN Abstand zwischen Titel und Trail */
+.entry-inner>.entry-title+.entry-trail {
+  margin-top: 0;
+}
+
+/* Abstand zwischen zwei Entries */
+.entry+.entry .entry-inner {
+  margin-top: 1.5rem;
+}
+
+/* --------------------------------------------------------- */
+/* Responsive Feinskalierung                                 */
+/* --------------------------------------------------------- */
+
+@media (min-width: 60rem) {
+  .entry+.entry .entry-inner {
+    margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .entry+.entry .entry-inner {
+    margin-top: 1.25rem;
+  }
+}
+
+/* ======================= END 13c ========================== */
+
+/* ========================================================= */
+/* 13d. ENTRY – TRAIL VISIBILITY                             */
+/* ========================================================= */
+/*
+   Ziel:
+   - SHORT ist Standardanzeige
+   - FULL wird pro Entry per Klasse .is-full aktiviert
+   - Umschaltung ausschließlich über CSS
+   - keine Layout- oder Strukturänderung
+   - Typografie über Level-Tokens gesteuert
+*/
+
+/* Standard: FULL-Trail ausgeblendet */
+.entry-trail-full {
+  display: none;
+
+  /* Level 1 – Primary Content */
+  color: var(--text-primary);
+  line-height: var(--text-primary-line-height);
+  font-weight: var(--text-primary-weight);
+}
+
+/* SHORT-Trail = ebenfalls Level 1 */
+.entry-trail-short {
+  color: var(--text-primary);
+  line-height: var(--text-primary-line-height);
+  font-weight: var(--text-primary-weight);
+}
+
+/* Wenn Entry auf FULL geschaltet wurde */
+.entry.is-full .entry-trail-short {
+  display: none;
+}
+
+.entry.is-full .entry-trail-full {
+  display: block;
+}
+
+/* ======================= END 13d ========================== */
+
+
+/* ========================================================= */
+/* 13e. ENTRY – TRAIL CONTROL (INTERACTION)                  */
+/* ========================================================= */
+/*
+   Ziel:
+   - Steuerelement […] erhält Link-Affordance
+   - klare typografische Hierarchie:
+       Level 2: Steuerung
+       Level 3: Meta-Information
+   - KEINE Logik-, Layout- oder Sichtbarkeitsänderung
+*/
+
+/* --------------------------------------------------------- */
+/* Level 2 – Secondary Control                               */
+/* --------------------------------------------------------- */
+
+.entry-trail-toggle {
+  color: var(--text-secondary);
+  font-size: var(--text-secondary-size);
+  font-weight: var(--text-secondary-weight);
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Hover: Standard-Linkverhalten */
+.entry-trail-toggle:hover {
+  text-decoration: underline;
+}
+
+/* Fokus: sichtbar, aber zurückhaltend (A11y) */
+.entry-trail-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+
+/* --------------------------------------------------------- */
+/* Level 3 – Meta Information (FULL-Trail Zusatz)            */
+/* --------------------------------------------------------- */
+
+.trail-meta {
+  color: var(--text-muted-weak);
+  font-size: var(--text-muted-size);
+  font-weight: var(--text-muted-weight);
+
+  margin-left: var(--gap-inline-loose);
+  white-space: nowrap;
+}
+
+.trail-meta a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.trail-meta a:hover {
+  text-decoration: underline;
+}
+
+/* ======================= END 13e ========================== */
+
+/* ========================================================= */
+/* 13f. ENTRY – TRAIL META (LINK)                            */
+/* ========================================================= */
+/*
+   Ziel:
+   - Meta-Link klar erkennbar, aber ruhig
+   - kein konkurrierender Hauptlink
+   - Apple-like Zurückhaltung
+*/
+
+/* Meta-Container */
+.trail-meta {
+  color: var(--text-muted-weak);
+  font-size: var(--text-muted-size);
+}
+
+/* Meta-Link */
+.trail-meta a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+/* Hover / Fokus: Link-Affordance */
+.trail-meta a:hover,
+.trail-meta a:focus-visible {
+  text-decoration: underline;
+}
+
+/* ======================= END 13f ========================== */
+
+/* ========================================================= */
+/* 13g. GLOBAL TRAIL MODE CONTROL                            */
+/* ========================================================= */
+/*
+   Ziel:
+   - globale Umschaltung SHORT | FULL
+   - Apple-like Segment-Control
+   - Inline unter H2, nicht formularartig
+   - aktiver Zustand sichtbar & funktional inaktiv
+   - Fokus sichtbar (auch wenn aktives Segment Tab-Stop ist)
+*/
+
+/* Container: Inline-Layout */
+.trail-mode-control {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-inline-loose);
+
+  margin: 0.25rem 0 0.75rem;
+  font-size: var(--text-secondary-size);
+  color: var(--text-secondary);
+}
+
+/* Label */
+.trail-mode-label {
+  white-space: nowrap;
+}
+
+/* Segment-Wrapper */
+.trail-mode-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+/* Buttons – Grundzustand */
+.trail-mode-segment button {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+/* Separator */
+.trail-mode-sep {
+  color: var(--text-secondary);
+}
+
+/* Hover nur für inaktive Option */
+.trail-mode-segment button[aria-pressed="false"]:hover {
+  text-decoration: underline;
+}
+
+/* Aktiver Zustand */
+.trail-mode-segment button[aria-pressed="true"] {
+  color: var(--text-primary);
+  cursor: default;
+  text-decoration: none;
+}
+
+/* Fokus: immer sichtbar (aktiv UND inaktiv) */
+.trail-mode-segment button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Optional: Unterstreichung im Fokus nur für inaktiv (wie Hover) */
+.trail-mode-segment button[aria-pressed="false"]:focus-visible {
+  text-decoration: underline;
+}
+
+/* ======================= END 13g ========================== */
+
+/* ========================================================= */
+/* 13h. GLOBAL TRAIL MODE – VISIBILITY OVERRIDE              */
+/* ========================================================= */
+/*
+   Ziel:
+   - globaler Mode (SHORT | FULL) überschreibt Entry-State
+   - body-Klassen steuern Darstellung
+   - lokales entry.is-full nur ohne globalen Mode wirksam
+*/
+
+/* --------------------------------------------------------- */
+/* Global FULL → alle Trails FULL                            */
+/* --------------------------------------------------------- */
+
+body.trail-mode-full .entry-trail-short {
+  display: none;
+}
+
+body.trail-mode-full .entry-trail-full {
+  display: block;
+}
+
+/* Entry-spezifische Steuerung visuell & funktional deaktiv */
+body.trail-mode-full .entry-trail-toggle {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+/* --------------------------------------------------------- */
+/* Global SHORT → alle Trails SHORT                          */
+/* --------------------------------------------------------- */
+
+body.trail-mode-short .entry-trail-full {
+  display: none;
+}
+
+body.trail-mode-short .entry-trail-short {
+  display: inline;
+}
+
+/* --------------------------------------------------------- */
+/* Lokaler Entry-FULL nur ohne globalen Modus                */
+/* --------------------------------------------------------- */
+
+body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-full {
+  display: block;
+}
+
+body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-short {
+  display: none;
+}
+
+/* ======================= END 13h ========================== */
+
+/* ========================================================= */
+/* 13i. ENTRY – MINI-BACKLINK                                */
+/* ========================================================= */
+/*
+   Ziel:
+   - dezenter Rücksprung-Link nach Jumpmark-Navigation
+   - Apple-like: ruhig, sekundär, nicht interaktiv-dominant
+   - sichtbar NUR im aktiven Zustand (.is-active)
+   - keine Inline-Styles: ausschließlich CSS-Klassen
+
+   Defensive:
+   - falls JS zusätzlich `aria-hidden="true"` ODER `hidden` setzt,
+     gewinnt der aktive Zustand trotzdem (sonst wäre der Link „unsichtbar“ obwohl aktiv).
+*/
+
+/* Grundzustand: nicht sichtbar */
+.entry-mini-backlink {
+  display: none;
+
+  margin-top: 0.75rem;
+
+  font-size: var(--text-secondary-size);
+  color: var(--text-secondary);
+
+  text-decoration: none;
+  white-space: nowrap;
+
+  opacity: 0.75;
+}
+
+/* Standardmäßig aus dem Flow, wenn JS versteckt */
+.entry-mini-backlink[aria-hidden="true"],
+.entry-mini-backlink[hidden] {
+  display: none;
+}
+
+/* Aktiv: sichtbar & eigener Zeilenblock (verhindert inline neben dem Trail) */
+.entry-mini-backlink.is-active {
+  display: block;
+  width: fit-content;
+
+  /* „Pudding“ für Fokus-Ring ohne Layout-Jump */
+  padding: 0.05em 0.2em;
+  border-radius: 3px;
+}
+
+/* Defensive: aktiv gewinnt – auch wenn aria-hidden/hidden nicht entfernt wurde */
+.entry-mini-backlink.is-active[aria-hidden="true"],
+.entry-mini-backlink.is-active[hidden] {
+  display: block;
+}
+
+/* Hover-Affordance (nur im aktiven Zustand) */
+.entry-mini-backlink.is-active:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+/* Tastatur-Fokus (A11y) */
+.entry-mini-backlink.is-active:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ======================= END 13i ========================== */
+
+/* ========================================================= */
+/* 13j. HOME – STARTCONTENT (Startseite im Main)             */
+/* ========================================================= */
+/*
+   Ziel:
+   - Startinhalt ist sichtbar, solange kein Bereich aktiv ist
+   - sobald irgendeine collection-section aktiv ist, wird .home ausgeblendet
+   - ohne JS-Änderung: Steuerung rein über CSS (progressive enhancement via :has)
+
+   Zusatzziel (PF-0.67):
+   - .home-start-button soll wie ein Standard-Link wirken
+*/
+
+/* Grundlayout für den Home-Block */
+.home {
+  display: block;
+}
+
+/* Typografie/Abstände (ruhig, dokumentenartig) */
+.home>h2 {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--heading-h2);
+}
+
+.home h3 {
+  margin: 1.75rem 0 0.75rem;
+}
+
+.home p {
+  margin: 0.75rem 0;
+}
+
+.home ul {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.home li {
+  margin: 0.25rem 0;
+}
+
+/* --------------------------------------------------------- */
+/* Home Quicklinks (UL bleibt dokumentenartig, kein Grid)     */
+/* --------------------------------------------------------- */
+
+.home-quicklinks {
+  list-style: disc;
+}
+
+/* --------------------------------------------------------- */
+/* Home Start Buttons – wie Standard-Link                    */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - Button verhält sich optisch wie ein normaler Link
+   - nutzt deine globale Link-Farbe (var(--color-accent))
+   - Hover/Focus wie bei Links (Underline + Fokus-Ring)
+   - keine „Button-Box“, keine Hintergrundfläche
+*/
+
+.home-start-button {
+  all: unset;
+  /* entfernt Button-Defaults */
+  display: inline;
+  /* wie <a> */
+  cursor: pointer;
+
+  color: var(--color-accent);
+  text-decoration: none;
+  /* Hover macht underline */
+
+  /* Typo erbt von Umgebung */
+  font: inherit;
+  line-height: inherit;
+}
+
+.home-start-button:hover {
+  text-decoration: underline;
+}
+
+/* Fokus wie Link-A11y im restlichen System */
+.home-start-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------- */
+/* Inline-Code (dezent, aber klar erkennbar)                 */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - ?start= und ähnliche Tokens sofort als „Code“ erkennbar
+   - Apple-like: ruhig, keine harte Rahmenbox
+   - funktioniert in Light/Dark ohne eigene Farben
+*/
+.home code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+
+  /* „Pill“-Anmutung wie im Hinweis-Kasten, aber inline */
+  padding: 0.15em 0.35em;
+  border-radius: 6px;
+
+  /* dezente Fläche (Light/Dark automatisch passend) */
+  background: rgba(0, 0, 0, 0.06);
+
+  /* keine Default-Rahmen/Unterstreichungen */
+  border: none;
+  text-decoration: none;
+
+  /* ruhige Vertikalposition in der Zeile */
+  vertical-align: 0.02em;
+
+  /* falls Zeilenumbruch: Box bleibt sauber */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Dark Mode: Fläche aufhellen (kein Alpha-Schwarz) */
+html.force-dark .home code {
+  background: rgba(255, 255, 255, 0.10);
+}
+
+/* --------------------------------------------------------- */
+/* Sichtbarkeitslogik: Home nur zeigen, wenn kein Content aktiv */
+/* --------------------------------------------------------- */
+/*
+   Hinweis:
+   - nutzt :has() (heute in Safari/Chromium/Edge verfügbar)
+   - falls ein Browser :has() nicht kann, bleibt .home sichtbar (Fallback)
+*/
+@supports selector(body:has(.collection-section.active)) {
+
+  /* sobald irgendein Bereich aktiv ist → Home ausblenden */
+  body:has(.collection-section.active) .home {
+    display: none;
+  }
+
+  /* wenn kein Bereich aktiv ist → Home einblenden */
+  body:not(:has(.collection-section.active)) .home {
+    display: block;
+  }
+}
+
+/* ======================= END 13j ========================= */
+
+/* ========================================================= */
+/* 14. FIXED PARENT (SCOPE-MODE)                             */
+/* ========================================================= */
+
+/* --------------------------------------------------------- */
+/* 14.1 Fixed Parent – Container                            */
+/* --------------------------------------------------------- */
+/*
+   Fixed Parent ist KEIN eigener Header,
+   sondern ein Navigationseintrag innerhalb der Pane-Fläche.
+
+   → kein eigener Hintergrund
+   → Pane-Hintergrund scheint durch
+   → keine visuelle Segmentierung
+*/
+
+.nav-fixed-parent {
+  display: none;
+  padding: .25rem .5rem;
+
+  /* bewusst KEIN background */
+}
+
+/* ---------------------- END 14.1 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 14.2 Fixed Parent – Button                               */
+/* --------------------------------------------------------- */
+
+.nav-fixed-parent-button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: .3rem var(--nav-hit-padding-x);
+
+  border-radius: 6px;
+  cursor: pointer;
+
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* ⬅️ ENTSCHEIDEND:
+   Platzhalter als echtes Flex-Item
+   → gleiche Geometrie wie .nav-icon */
+.nav-fixed-parent-button::before {
+  content: '';
+  display: inline-block;
+  width: 1ch;
+  flex: 0 0 1ch;
+}
+
+/* Hover wie normale Navigation */
+.nav-fixed-parent-button:hover {
+  background: var(--nav-context-bg);
+}
+
+/* ---------------------- END 14.2 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 14.3 Sichtbarkeit im Scope-Mode                           */
+/* --------------------------------------------------------- */
+
+body.nav-focus-mode .nav-fixed-parent {
+  display: block;
+}
+
+/* ---------------------- END 14.3 ------------------------- */
+
+/* ======================= END 14 =========================== */
+
+
+/* ========================================================= */
+/* 15. NAVIGATION – SCOPE-MODE                               */
+/* ========================================================= */
+
+body.nav-focus-mode .nav-item.is-hidden {
+  display: none;
+}
+
+body.nav-focus-mode .nav-item.is-scope-parent>button {
+  display: none;
+}
+
+body.nav-focus-mode .nav-item>.nav-children {
+  display: none;
+}
+
+body.nav-focus-mode .nav-item.is-scope-parent>.nav-children {
+  display: block;
+}
+
+
+/* ======================= END 15 =========================== */
+
+
+/* ========================================================= */
+/* 16. ROOT-EXIT                                             */
+/* ========================================================= */
+
+.nav-root-exit {
+  display: none;
+  padding: .4rem .6rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: .8rem;
+}
+
+body.nav-focus-mode .nav-root-exit {
+  display: block;
+}
+
+.nav-root-button {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-muted);
+}
+
+.nav-root-button:hover {
+  text-decoration: underline;
+}
+
+
+/* ======================= END 16 =========================== */
+
+
+/* ========================================================= */
+/* 17. DEV DARK / LIGHT MODE                                 */
+/* ========================================================= */
+
+/* --------------------------------------------------------- */
+/* 17.1 Dark Mode – Design Tokens                            */
+/* --------------------------------------------------------- */
+/*
+   WICHTIG:
+   - Aufhellung im Dark Mode darf NICHT mit Alpha-Schwarz erfolgen
+   - Alpha-Schwarz dunkelt immer weiter ab
+   - Für Hover / Kontext wird deshalb Alpha-Weiß verwendet
+*/
+
+html.force-dark {
+  --color-text: #f5f5f7;
+  --color-muted: #a1a1a6;
+  --color-border: #3a3a3c;
+  --color-bg: #1c1c1e;
+  --color-accent: #7da6ff;
+
+  /* Kontext-Hintergrund (Hover, Root-Current, Scope-Parent)
+     → echte AUFHELLUNG auf dunklem Grund */
+  --nav-context-bg: rgba(255, 255, 255, 0.10);
+}
+
+/* ---------------------- END 17.1 ------------------------- */
+
+/* --------------------------------------------------------- */
+/* 17.2 Dark Mode – Tastatur-Fokus (visuell verstärkt)       */
+/* --------------------------------------------------------- */
+/*
+   - Fokus per Tastatur erhält zusätzlich Hintergrund
+   - Maus-Hover bleibt davon unberührt
+   - Accent-basiert für klare Zuordnung
+*/
+
+html.force-dark .nav-pane button:focus-visible {
+  background: rgba(125, 166, 255, 0.18);
+}
+
+/* ---------------------- END 17.2 ------------------------- */
+
+
+/* ======================= END 17 =========================== */
+
+
+/* ========================================================= */
+/* 18. DEV TOOLS                                             */
+/* ========================================================= */
+/*
+   DEV-Overlay:
+   - vollständig aus dem Dokumentfluss genommen
+   - beeinflusst weder Header noch Layout
+   - bleibt bei Scrollen sichtbar
+*/
+
+.dev-tools {
+  /* position: fixed → aus dem Flow */
+  position: fixed;
+  top: 0.75rem;
+  right: 1rem;
+
+  z-index: 1000;
+
+  display: flex;
+  gap: .75rem;
+
+  /* keinerlei Einfluss auf Layout */
+  padding: 0;
+  margin: 0;
+}
+
+.dev-dark-toggle {
+  all: unset;
+  font-size: .8rem;
+  line-height: 1.2;
+
+  padding: .35em .7em;
+  border-radius: 6px;
+  cursor: pointer;
+
+  color: var(--color-muted);
+  background: rgba(0, 0, 0, .05);
+
+  white-space: nowrap;
+}
+
+.dev-dark-toggle:hover {
+  text-decoration: underline;
+}
+
+/* ======================= END 18 =========================== */
+
+/* ========================================================= */
+/* 19. FOOTER                                                */
+/* ========================================================= */
+/*
+   Ziel:
+   - globale Metainformation
+   - ruhig, sekundär, nicht konkurrenzierend
+   - semantisch klarer Abschluss der Seite
+*/
+
+.page-footer {
+  flex: 0 0 auto;
+
+  padding: 0.75rem 1.5rem 1rem;
+  border-top: 1px solid var(--color-border);
+
+  font-size: var(--text-muted-size);
+  color: var(--text-muted-weak);
+
+  text-align: center;
+}
+
+.page-footer-text {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.page-footer a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.page-footer a:hover,
+.page-footer a:focus-visible {
+  text-decoration: underline;
+}
+
+/* ======================= END 19 =========================== */
+
+/* =========================================================
+/* 20. A11y – Content
+   Fokus-Ring darf nicht am Main-Rand abgeschnitten werden
+   → Raum kommt über `main { padding-inline: ... }`
+   ========================================================= */
+
+main a:focus-visible,
+main button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+/* ======================= END 20 =========================== */
