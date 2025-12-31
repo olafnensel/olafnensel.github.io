@@ -50,14 +50,14 @@
             margin: 0.75rem 0;
             }
 
-.highlight-indent {
-  margin-left: 2rem;
-}
-
-.separator {
-  color: #888;
-  margin: 0 0.3em;
-}
+            .highlight-indent {
+            margin-left: 2rem;
+            }
+            
+            .separator {
+            color: #888;
+            margin: 0 0.3em;
+            }
 
             strong {
             font-weight: 600;
@@ -69,9 +69,6 @@
             border-radius: 6px;
             font-size: 0.9rem;
             overflow-x: auto;
-            }
-
-            pre {
             white-space: pre-wrap; /* erlaubt Umbruch */
             overflow-wrap: anywhere; /* bricht lange Tokens */
             word-break: break-word; /* Fallback */
