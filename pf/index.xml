@@ -50,6 +50,10 @@
             margin: 0.75rem 0;
             }
 
+.highlight-indent {
+  margin-left: 2rem;
+}
+
             strong {
             font-weight: 600;
             }
@@ -98,7 +102,7 @@
 
             <p> Neu ist lediglich der Dateiname am Ende der Adresse:</p>
 
-            <p><strong>index-edge.xml → index.html</strong></p>
+<p class="highlight-indent"><strong>index-edge.xml → index.html</strong></p>
 
             <h2>Neue Adresse</h2>
 
