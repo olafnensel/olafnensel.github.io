@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="#sheet1"?>
+<!DOCTYPE hinweis [
+  <!ELEMENT hinweis ANY>
+
+  <!ELEMENT xsl:stylesheet ANY>
+  <!ATTLIST xsl:stylesheet id ID #REQUIRED>
+
+  <!ELEMENT xsl:template ANY>
+]>
+
+<hinweis>
+
+  <xsl:stylesheet
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    version="1.0"
+    id="sheet1">
+    <xsl:template match="/">
+      <html xml:lang="de">
+        <head>
+          <title>Pfadfinder</title>
+          <style>
+            body {
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #1d1d1f;
+            margin: 2rem;
+            line-height: 1.55;
+            background: #ffffff;
+            }
+
+            main {
+            max-width: 55ch; /* ← ZEILENLÄNGE */
+            margin-left: auto;
+            margin-right: auto;
+            }
+
+            h1 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            }
+
+            h2 {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            }
+
+            p {
+            margin: 0.75rem 0;
+            }
+
+            strong {
+            font-weight: 600;
+            }
+
+            pre {
+            background: #f5f5f7;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            }
+
+            pre {
+            white-space: pre-wrap; /* erlaubt Umbruch */
+            overflow-wrap: anywhere; /* bricht lange Tokens */
+            word-break: break-word; /* Fallback */
+            padding:2ch;
+            }
+
+            code {
+            background: #f0f0f2;
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+            }
+
+            .closing {
+            margin-top: 2rem;
+            color: #6e6e73;
+            }
+
+            .uri-highlight {
+            color: #005fcc; /* zurückhaltendes Blau */
+            font-weight: 500;
+            }
+          </style>
+        </head>
+        <body>
+          <main>
+            <h1>Der Pfadfinder hat eine neue Adresse</h1>
+
+            <p>
+              Der Pfadfinder ist umgezogen und jetzt unter einer neuen Adresse erreichbar –
+              mit allen bisherigen Inhalten und Funktionen sowie einigen Verbesserungen.
+            </p>
+
+            <p> Neu ist lediglich der Dateiname am Ende der Adresse:</p>
+
+            <p><strong>index-edge.xml → index.html</strong></p>
+
+            <h2>Neue Adresse</h2>
+
+            <pre>file://dst.baintern.de/BA-Ablagen/131/UG/900/9002_Durchführungsbestimmun/Pfadfinder/app/<span class="uri-highlight">index.html</span></pre>
+
+            <p class="uri-action">
+              <a href="index.html">
+                Pfadfinder jetzt öffnen
+              </a>
+            </p>
+
+            <p>
+              Sie können den Pfadfinder auch mit den Links unter Gesetze auch privat nutzen, unter der Internetadresse:
+            </p>
+
+              <pre><a href="https://olafnensel.github.io/pf/index.html">https://olafnensel.github.io/pf/index.html</a></pre>
+
+
+            <p>
+              Bitte aktualisieren Sie Ihren Favoriten oder eine ggf. verwendete Verknüpfung.
+            </p>
+
+            <p class="closing">
+              Viel Erfolg beim Arbeiten mit dem Pfadfinder!
+            </p>
+          </main>
+        </body>
+      </html>
+    </xsl:template>
+
+  </xsl:stylesheet>
+
+</hinweis>
