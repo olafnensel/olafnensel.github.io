@@ -57,6 +57,7 @@
 .separator {
   color: #888;
   margin: 0 0.3em;
+}
 
             strong {
             font-weight: 600;
