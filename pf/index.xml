@@ -54,6 +54,10 @@
   margin-left: 2rem;
 }
 
+.separator {
+  color: #888;
+  margin: 0 0.3em;
+
             strong {
             font-weight: 600;
             }
@@ -102,7 +106,7 @@
 
             <p> Neu ist lediglich der Dateiname am Ende der Adresse:</p>
 
-<p class="highlight-indent"><strong>index-edge.xml → index.html</strong></p>
+<p class="highlight-indent"><strong>index-edge.xml <span class="separator">→</span> index.html</strong></p>
 
             <h2>Neue Adresse</h2>
 
