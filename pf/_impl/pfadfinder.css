@@ -5,7 +5,6 @@
 /* ========================================================= */
 /* 1. ROOT – Farben, Typografie, Geometrie                   */
 /* ========================================================= */
-
 :root {
   --font-base:
     system-ui,
@@ -31,7 +30,7 @@
 
   /* Einheitliche Klick- & Highlight-Zone */
   --nav-hit-padding-x: .75rem;
-/* ===================================================== */
+  /* ===================================================== */
   /* TYPOGRAPHY TOKENS – BODY & INLINE                      */
   /* ===================================================== */
 
@@ -45,8 +44,8 @@
   --heading-h3-scale: 0.95;
 
   /* CODE  */
-    --code-bg: #f2f3f5;
-    --code-text: #1d1d1f;
+  --code-bg: #f2f3f5;
+  --code-text: #1d1d1f;
 
   /* Secondary Control (Inline-Steuerung) */
   --text-secondary: var(--color-muted);
@@ -82,8 +81,24 @@
   --gap-inline-loose: 0.6em;
   --gap-block-small: 0.75rem;
   --gap-block-medium: 3rem;
-}
 
+  /* ========================================================= */
+  /* 1.x LINK TOKENS – global, light/dark konsistent           */
+  /* ========================================================= */
+  /* Primäre Linkfarbe */
+  --link-color: var(--color-accent);
+
+  /* Hover / Fokus */
+  --link-hover-decoration: underline;
+
+  /* Fokus-Ring */
+  --link-focus-outline: 2px solid var(--color-accent);
+  --link-focus-offset: 2px;
+
+  /* Ruhige sekundäre Links (Controls) */
+  --link-secondary-color: var(--text-secondary);
+}
+  /* ======================= END 1. ========================== */
 /* ========================================================= */
 /* SYSTEM DARK MODE (Default – ohne DEV Override)            */
 /* ========================================================= */
@@ -171,8 +186,21 @@ code {
   background-color: var(--code-bg);
   color: var(--code-text);
 }
+pre {
+  background: #f5f5f7;
+  padding: 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  /* erlaubt Umbruch */
+  overflow-wrap: anywhere;
+  /* bricht lange Tokens */
+  word-break: break-word;
+  /* Fallback */
+  padding: 2ch;
+}
 
-/* ======================= END 1 ============================ */
 
 /* ========================================================= */
 /* 2. GLOBALER LAYOUTKONTEXT                                 */
@@ -858,11 +886,6 @@ main {
   border-radius: 3px;
 }
 
-/* Hover: klare, aber ruhige Affordance */
-.jumpmarks a:hover {
-  text-decoration: underline;
-}
-
 /* Fokus: Ring + leichtes Cushion für Lesbarkeit */
 .jumpmarks a:focus-visible {
   text-decoration: underline;
@@ -1020,11 +1043,6 @@ html.force-dark .jumpmarks a:focus-visible {
   white-space: nowrap;
 }
 
-/* Hover: Standard-Linkverhalten */
-.entry-trail-toggle:hover {
-  text-decoration: underline;
-}
-
 /* Fokus: sichtbar, aber zurückhaltend (A11y) */
 .entry-trail-toggle:focus-visible {
   outline: 2px solid var(--color-accent);
@@ -1051,10 +1069,6 @@ html.force-dark .jumpmarks a:focus-visible {
   text-decoration: none;
 }
 
-.trail-meta a:hover {
-  text-decoration: underline;
-}
-
 /* ======================= END 13e ========================== */
 
 /* ========================================================= */
@@ -1077,12 +1091,6 @@ html.force-dark .jumpmarks a:focus-visible {
 .trail-meta a {
   color: var(--color-accent);
   text-decoration: none;
-}
-
-/* Hover / Fokus: Link-Affordance */
-.trail-meta a:hover,
-.trail-meta a:focus-visible {
-  text-decoration: underline;
 }
 
 /* ======================= END 13f ========================== */
@@ -1291,9 +1299,6 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
    - Startinhalt ist sichtbar, solange kein Bereich aktiv ist
    - sobald irgendeine collection-section aktiv ist, wird .home ausgeblendet
    - ohne JS-Änderung: Steuerung rein über CSS (progressive enhancement via :has)
-
-   Zusatzziel (PF-0.67):
-   - .home-start-button soll wie ein Standard-Link wirken
 */
 
 /* Grundlayout für den Home-Block */
@@ -1333,44 +1338,6 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 
 .home-quicklinks {
   list-style: disc;
-}
-
-/* --------------------------------------------------------- */
-/* Home Start Buttons – wie Standard-Link                    */
-/* --------------------------------------------------------- */
-/*
-   Ziel:
-   - Button verhält sich optisch wie ein normaler Link
-   - nutzt deine globale Link-Farbe (var(--color-accent))
-   - Hover/Focus wie bei Links (Underline + Fokus-Ring)
-   - keine „Button-Box“, keine Hintergrundfläche
-*/
-
-.home-start-button {
-  all: unset;
-  /* entfernt Button-Defaults */
-  display: inline;
-  /* wie <a> */
-  cursor: pointer;
-
-  color: var(--color-accent);
-  text-decoration: none;
-  /* Hover macht underline */
-
-  /* Typo erbt von Umgebung */
-  font: inherit;
-  line-height: inherit;
-}
-
-.home-start-button:hover {
-  text-decoration: underline;
-}
-
-/* Fokus wie Link-A11y im restlichen System */
-.home-start-button:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: 3px;
 }
 
 /* --------------------------------------------------------- */
@@ -1696,23 +1663,87 @@ body[data-dev="true"] .dev-tools {
   text-decoration: none;
 }
 
-.page-footer a:hover,
-.page-footer a:focus-visible {
-  text-decoration: underline;
-}
-
 /* ======================= END 19 =========================== */
 
-/* =========================================================
-/* 20. A11y – Content
-   Fokus-Ring darf nicht am Main-Rand abgeschnitten werden
-   → Raum kommt über `main { padding-inline: ... }`
-   ========================================================= */
+/* ========================================================= */
+/* 20. GLOBAL LINKS – EINHEITLICH (Light & Dark)              */
+/* ========================================================= */
 
-main a:focus-visible,
-main button:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+/* --------------------------------------------------------- */
+/* 20.1 Basis-Link (Dokument & Anwendung)                    */
+/* --------------------------------------------------------- */
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+/* Hover */
+a:hover {
+  text-decoration: var(--link-hover-decoration);
+}
+
+/* Tastatur-Fokus */
+a:focus-visible {
+  outline: var(--link-focus-outline);
+  outline-offset: var(--link-focus-offset);
   border-radius: 3px;
+}
+
+
+/* --------------------------------------------------------- */
+/* 20.2 Link-ähnliche Controls (Buttons als Links)           */
+/* --------------------------------------------------------- */
+/*
+   Gilt für:
+   - .home-start-button
+   - .entry-trail-toggle
+   - Trail-Mode-Switch („verkürzt | vollständig“)
+*/
+
+button.home-start-button,
+.entry-trail-toggle,
+.trail-mode-segment button {
+  all: unset;
+  cursor: pointer;
+
+  color: var(--link-color);
+  font: inherit;
+  line-height: inherit;
+  white-space: nowrap;
+}
+
+/* Hover */
+button.home-start-button:hover,
+.entry-trail-toggle:hover,
+.trail-mode-segment button[aria-pressed="false"]:hover {
+  text-decoration: var(--link-hover-decoration);
+}
+
+/* Fokus */
+button.home-start-button:focus-visible,
+.entry-trail-toggle:focus-visible,
+.trail-mode-segment button:focus-visible {
+  outline: var(--link-focus-outline);
+  outline-offset: var(--link-focus-offset);
+  border-radius: 3px;
+}
+
+
+/* --------------------------------------------------------- */
+/* 20.3 Sekundäre / Meta-Links                               */
+/* --------------------------------------------------------- */
+
+.trail-meta a,
+.page-footer a {
+  color: var(--link-secondary-color);
+  text-decoration: none;
+}
+
+.trail-meta a:hover,
+.page-footer a:hover,
+.trail-meta a:focus-visible,
+.page-footer a:focus-visible {
+  text-decoration: underline;
 }
 /* ======================= END 20 =========================== */
