@@ -425,68 +425,80 @@ html.force-dark {
 /* ======================= END 5 =========================== */
 
 /* ========================================================= */
-/* 5.3 RESPONSIVE – MOBILE NAV HEIGHT LIMIT                  */
+/* 5.3 RESPONSIVE – MOBILE LAYOUT                            */
 /* ========================================================= */
 /*
    Ziel:
-   - Mobile Stack:
-       Navigation oben
-       Content darunter sofort sichtbar
-   - Navigation darf NICHT die komplette Viewporthöhe belegen
-   - Navigation bleibt intern scrollbar (wie Desktop)
+   - Mobile Stack: Navigation oben, Content darunter
+   - EINHEITLICHER Abstand zum Viewport
+   - Navigation intern scrollbar
+   - kein doppelter oder asymmetrischer Rand
 */
 
 @media (max-width: 56rem) {
 
-  /* Seite darf wieder scrollen */
+  /* Seite darf wieder scrollen + EINZIGE Quelle für Seitenabstand */
   body {
     overflow: auto;
+
+    /* Basis-Abstand (funktioniert überall, auch file://) */
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
-  /* Layout stapeln */
+  /* Optional: echte iOS Safe-Area-Unterstützung */
+  @supports (padding: env(safe-area-inset-left)) {
+    body {
+      padding-left: calc(0.75rem + env(safe-area-inset-left));
+      padding-right: calc(0.75rem + env(safe-area-inset-right));
+    }
+  }
+
+  /* Layout stapeln – KEIN eigener Seitenabstand */
   .layout {
     flex-direction: column;
     gap: 1rem;
+
     padding: 0.75rem 0;
+    /* nur vertikal */
     width: 100%;
     align-items: stretch;
-
-    /* 🔑 kein internes Clipping */
     overflow: visible;
   }
 
-/* Navigation: mobile – volle Breite, begrenzte Höhe, eigene Scrollzone */
-@media (max-width: 56rem) {
-
+  /* Navigation: volle Breite innerhalb des Body-Paddings */
   .nav-pane {
     flex: 0 0 auto;
-
     width: 100%;
     max-width: none;
     box-sizing: border-box;
 
-    border-radius: 0;
+    border-radius: 12px;
 
     /* Höhe begrenzen, damit Content sichtbar bleibt */
     max-height: 50vh;
 
-    /* Scrollbar NUR bei Bedarf */
+    /* Scrollbar nur bei Bedarf */
     overflow-y: auto;
     overflow-x: hidden;
   }
-
-}
 
   /* Scroll-Container deaktivieren */
   .nav-scroll {
     overflow: visible;
   }
 
-  /* Content fließt normal */
+  /* Content: KEIN eigener Seitenabstand */
   main {
     overflow: visible;
     max-width: none;
     margin: 0;
+    padding: 0;
+  }
+
+  /* Content-Wrapper ebenfalls neutral */
+  .content-wrap {
+    padding: 0;
   }
 }
 
