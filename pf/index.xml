@@ -16,81 +16,249 @@
     version="1.0"
     id="sheet1">
     <xsl:template match="/">
-      <html xml:lang="de">
+      <html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
         <head>
           <title>Pfadfinder</title>
+          <meta name="color-scheme" content="light dark" />
+          <script type="text/javascript"><![CDATA[
+            (function () {
+              // Fallback für Safari/XML: prefers-color-scheme kann in XML/XSLT-Rendering ignoriert werden.
+              // Wir setzen dann eine Klasse am <html>, die CSS ebenfalls auswerten kann.
+              function apply() {
+                try {
+                  var m = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+                  var isDark = !!(m && m.matches);
+                  var root = document.documentElement;
+                  if (!root) return;
+                  root.classList.toggle('force-dark', isDark);
+                  root.classList.toggle('force-light', !isDark);
+                } catch (e) {
+                  // no-op
+                }
+              }
+
+              apply();
+
+              try {
+                var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+                if (mq && typeof mq.addEventListener === 'function') {
+                  mq.addEventListener('change', apply);
+                } else if (mq && typeof mq.addListener === 'function') {
+                  mq.addListener(apply);
+                }
+              } catch (e) {
+                // no-op
+              }
+            })();
+            ]]>
+            </script>
           <style>
+            /* ========================================================= */
+            /* Pfadfinder – Hinweis-Seite (Standalone CSS) */
+            /* ========================================================= */
+
+            /* ========================================================= */
+            /* 1. ROOT – Design Tokens (identisch zum Pfadfinder) */
+            /* ========================================================= */
+            :root {
+            --font-base:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            "Helvetica Neue",
+            Arial,
+            sans-serif;
+
+            /* Light Mode */
+            --color-bg: #ffffff;
+            --color-text: #1d1d1f;
+            --color-muted: #6e6e73;
+            --color-border: #e5e5ea;
+            --color-accent: #0a58ca;
+
+            --heading-h1: #2c2c2e;
+            --heading-h2: #2c2c2e;
+
+            --code-bg: #f2f3f5;
+            --code-text: #1d1d1f;
+
+            --text-secondary: var(--color-muted);
+            --text-muted-weak: var(--color-muted);
+            }
+
+            /* ========================================================= */
+            /* Dark Mode (System) */
+            /* ========================================================= */
+            /* ========================================================= */
+            /* Dark Mode (System) + Fallback-Klasse (Safari/XML) */
+            /* ========================================================= */
+
+            /* System Dark Mode */
+            @media (prefers-color-scheme: dark) {
+            :root {
+            --color-bg: #1c1c1e;
+            --color-text: #f5f5f7;
+            --color-muted: #a1a1a6;
+            --color-border: #3a3a3c;
+            --color-accent: #7da6ff;
+
+            --heading-h1: #f5f5f7;
+            --heading-h2: #f5f5f7;
+
+            --code-bg: rgba(255, 255, 255, 0.10);
+            --code-text: #f5f5f7;
+            }
+            }
+
+            /* Fallback: Klasse wird per JS gesetzt (force-dark/force-light) */
+            html.force-dark {
+            --color-bg: #1c1c1e;
+            --color-text: #f5f5f7;
+            --color-muted: #a1a1a6;
+            --color-border: #3a3a3c;
+            --color-accent: #7da6ff;
+
+            --heading-h1: #f5f5f7;
+            --heading-h2: #f5f5f7;
+
+            --code-bg: rgba(255, 255, 255, 0.10);
+            --code-text: #f5f5f7;
+            }
+
+            /* ========================================================= */
+            /* 2. GLOBAL RESET / BODY */
+            /* ========================================================= */
+            html,
             body {
-            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-            color: #1d1d1f;
-            margin: 2rem;
+            margin: 0;
+            padding: 0;
+            }
+
+            html {
+            color-scheme: light dark;
+            /* Safari/XML: auch den Canvas (html) einfärben */
+            background: var(--color-bg);
+            }
+
+            body {
+            font-family: var(--font-base);
+            font-size: 15px;
             line-height: 1.55;
-            background: #ffffff;
+            color: var(--color-text);
+            background: var(--color-bg);
             }
 
+            /* ========================================================= */
+            /* 3. LAYOUT */
+            /* ========================================================= */
             main {
-            max-width: 55ch; /* ← ZEILENLÄNGE */
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 68ch;
+            margin: 3rem auto;
+            padding: 0 1rem;
             }
 
+            /* ========================================================= */
+            /* 4. HEADINGS */
+            /* ========================================================= */
             h1 {
             margin-top: 0;
             font-size: 1.6rem;
-            font-weight: 700;
+            font-weight: 600;
+            color: var(--heading-h1);
             }
 
             h2 {
-            margin-top: 2rem;
-            font-size: 1.2rem;
-            font-weight: 700;
+            margin-top: 2.5rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--heading-h2);
             }
 
+            /* ========================================================= */
+            /* 5. TEXT */
+            /* ========================================================= */
             p {
             margin: 0.75rem 0;
             }
 
-            .highlight-indent {
-            margin-left: 2rem;
-            }
-            
-            .separator {
-            color: #888;
-            margin: 0 0.3em;
+            /* ========================================================= */
+            /* 6. LINKS – exakt wie Pfadfinder */
+            /* ========================================================= */
+            a {
+            color: var(--color-accent);
+            text-decoration: none;
             }
 
-            strong {
-            font-weight: 600;
+            a:hover {
+            text-decoration: underline;
+            }
+
+            a:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+            border-radius: 3px;
+            }
+
+            /* ========================================================= */
+            /* 7. INLINE CODE und PRE */
+            /* ========================================================= */
+            code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.95em;
+            padding: 0.15em 0.35em;
+            border-radius: 0.25em;
+            background: var(--code-bg);
+            color: var(--code-text);
             }
 
             pre {
-            background: #f5f5f7;
-            padding: 0.75rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem;
+            border-radius: 8px;
             overflow-x: auto;
-            white-space: pre-wrap; /* erlaubt Umbruch */
-            overflow-wrap: anywhere; /* bricht lange Tokens */
-            word-break: break-word; /* Fallback */
-            padding:2ch;
+            white-space: pre-wrap;
+            word-break: break-word;
             }
 
-            code {
-            background: #f0f0f2;
-            padding: 0.1rem 0.3rem;
-            border-radius: 4px;
-            font-size: 0.9em;
+            /* ========================================================= */
+            /* 8. SPEZIELLE HINWEIS-ELEMENTE */
+            /* ========================================================= */
+
+            /* Hervorgehobene Änderung */
+            .highlight-indent {
+            margin: 1.5rem 0;
+            padding-left: 1.25rem;
+            border-left: 3px solid var(--color-accent);
+            font-size: 1.05em;
             }
 
-            .closing {
-            margin-top: 2rem;
-            color: #6e6e73;
+            /* Pfeil als dezenter Separator */
+            .separator {
+            margin: 0 0.5ch;
+            color: var(--text-secondary);
             }
 
+            /* URL-Hervorhebung */
             .uri-highlight {
-            color: #005fcc; /* zurückhaltendes Blau */
+            color: var(--color-accent);
+            font-weight: 600;
+            }
+
+            /* Call-to-Action */
+            .uri-action {
+            margin: 1.25rem 0;
+            }
+
+            .uri-action a {
             font-weight: 500;
             }
+
+            /* ========================================================= */
+            /* END */
+            /* ========================================================= */
           </style>
         </head>
         <body>
@@ -104,11 +272,13 @@
 
             <p> Neu ist lediglich der Dateiname am Ende der Adresse:</p>
 
-<p class="highlight-indent"><strong>index-edge.xml <span class="separator">→</span> index.html</strong></p>
+            <p class="highlight-indent">
+              <strong>index-edge.xml <span class="separator">→</span> index.html</strong>
+            </p>
 
             <h2>Neue Adresse</h2>
 
-            <pre>file://dst.baintern.de/BA-Ablagen/131/UG/900/9002_Durchführungsbestimmun/Pfadfinder/app/<span class="uri-highlight">index.html</span></pre>
+            <pre class="uri">file://dst.baintern.de/<wbr />BA-Ablagen/<wbr />131/<wbr />UG/<wbr />900/<wbr />9002_Durchführungsbestimmung/<wbr />Pfadfinder/<wbr />app/<wbr /><span class="uri-highlight">index.html</span></pre>
 
             <p class="uri-action">
               <a href="index.html">
@@ -118,9 +288,6 @@
 
             <p>
               Bitte aktualisieren Sie Ihren Favoriten oder eine ggf. verwendete Verknüpfung.
-            </p>
-            <p class="closing">
-              Viel Erfolg beim Arbeiten mit dem Pfadfinder!
             </p>
           </main>
         </body>
