@@ -569,59 +569,22 @@ function setLeafAriaSelected(activeBtn) {
 // #region
 
 /* --------------------------------------------------------------
-   Touch-Gate: verhindert iOS Ghost-Activations bei Touch + Scroll
+   HARD TOUCH-CLICK GATE (Owner-basiert, deterministisch)
 -------------------------------------------------------------- */
 
-let navTouchActive = false;
-let navTouchReleaseTimer = null;
-
 /**
- * Touch-Lock setzen (nur für echte Touch-Gesten).
- * Clicks werden unterdrückt, solange der Touch „lebt“.
+ * Prüft, ob ein Click verarbeitet werden darf.
+ * - Maus / Keyboard: immer erlaubt
+ * - Touch: nur erlaubt, wenn Click-Ziel dem aktiven Touch-Owner entspricht
  */
-function lockNavForTouch() {
-  navTouchActive = true;
+function isNavClickAllowed(event) {
+  // Kein Touch aktiv → normaler Click (Desktop / Maus / Keyboard)
+  if (!activeTouchOwner) return true;
 
-  if (navTouchReleaseTimer) {
-    clearTimeout(navTouchReleaseTimer);
-    navTouchReleaseTimer = null;
-  }
+  // Touch aktiv → Click muss zum Owner gehören
+  const clickedItem = event.target.closest('.nav-item');
+  return clickedItem === activeTouchOwner;
 }
-
-/**
- * Touch-Lock verzögert freigeben.
- * Kurzer Delay nötig, um iOS Re-Hit-Testing nach Scroll abzufangen.
- */
-function releaseNavAfterTouch() {
-  if (navTouchReleaseTimer) {
-    clearTimeout(navTouchReleaseTimer);
-  }
-
-  navTouchReleaseTimer = setTimeout(() => {
-    navTouchActive = false;
-    navTouchReleaseTimer = null;
-  }, 120); // bewusst kurz, stabil auf iOS
-}
-
-/* --------------------------------------------------------------
-   Touch Lifecycle (entscheidend!)
--------------------------------------------------------------- */
-
-document.addEventListener('touchstart', e => {
-  if (e.target.closest('.nav-pane')) {
-    lockNavForTouch();
-  }
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-  if (navTouchActive) {
-    releaseNavAfterTouch();
-  }
-}, { passive: true });
-
-document.addEventListener('touchcancel', () => {
-  releaseNavAfterTouch();
-});
 
 /* --------------------------------------------------------------
    Click Handler
@@ -630,9 +593,9 @@ document.addEventListener('touchcancel', () => {
 document.addEventListener('click', e => {
 
   /* --------------------------------------------------------------
-     GLOBAL TOUCH-GATE
+     GLOBAL TOUCH-OWNERSHIP GATE (ABSOLUT)
      -------------------------------------------------------------- */
-  if (navTouchActive) {
+  if (!isNavClickAllowed(e)) {
     e.preventDefault();
     e.stopPropagation();
     return;
@@ -1097,7 +1060,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 20260102-0036PM-CET';
+  const BUILD_INFO = 'Build: 20260102-0049PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
