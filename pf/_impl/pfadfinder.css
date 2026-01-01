@@ -224,6 +224,26 @@ body {
   overflow: hidden;
 }
 
+/* automatische Silbentrennung ----------------------------- */
+/*
+   Voraussetzungen:
+   - <html lang="de"> (oder passende Sprache)
+   - wirkt nur bei mehrzeiligem Text
+
+   Ziel:
+   - bessere Lesbarkeit bei schmalen Viewports
+   - keine manuellen &shy; nötig
+*/
+html {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+
+  /* verhindert hässliche Wortabbrüche */
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
 /* ======================= END 2 ============================ */
 
 /* ========================================================= */
