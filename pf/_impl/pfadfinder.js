@@ -464,6 +464,146 @@ document.addEventListener(
 /* ============================ END BLOCK 7a ============================ */
 
 /* ======================================================================
+   [BLOCK 7.5] TOUCH INTERACTION GUARD (OWNER MODEL)
+   ====================================================================== */
+// #region
+/*
+   Ziel:
+   - exakt ein Nav-Item besitzt eine Touch-Interaktion
+   - verhindert Ghost-Clicks nach programmgesteuertem Scroll
+   - unabhängig von Scroll, Timing oder Layout
+   - Apple-like Gesture Ownership
+*/
+
+let activeTouchOwner = null;
+
+/**
+ * Ermittelt das relevante Nav-Item für einen Touch.
+ */
+function resolveNavItemFromEventTarget(target) {
+  return target.closest('.nav-item') || null;
+}
+
+/* --------------------------------------------------------------
+   POINTER EVENTS (bevorzugt)
+-------------------------------------------------------------- */
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+
+  // Nur neuen Owner setzen, wenn noch keiner aktiv ist
+  if (!activeTouchOwner) {
+    activeTouchOwner = resolveNavItemFromEventTarget(e.target);
+  }
+}, { passive: true });
+
+document.addEventListener('pointerup', e => {
+  if (e.pointerType !== 'touch') return;
+  activeTouchOwner = null;
+}, { passive: true });
+
+document.addEventListener('pointercancel', e => {
+  if (e.pointerType !== 'touch') return;
+  activeTouchOwner = null;
+}, { passive: true });
+
+/* --------------------------------------------------------------
+   SAFARI FALLBACK (touch events)
+-------------------------------------------------------------- */
+document.addEventListener('touchstart', e => {
+  if (activeTouchOwner) return;
+  activeTouchOwner = resolveNavItemFromEventTarget(e.target);
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  activeTouchOwner = null;
+}, { passive: true });
+
+document.addEventListener('touchcancel', () => {
+  activeTouchOwner = null;
+}, { passive: true });
+
+/**
+ * Prüft, ob ein Click zur aktuellen Touch-Sequenz gehört.
+ */
+function isClickAllowedForTouchOwner(clickTarget) {
+  if (!activeTouchOwner) return true; // kein Touch aktiv
+  const clickedItem = resolveNavItemFromEventTarget(clickTarget);
+  return clickedItem === activeTouchOwner;
+}
+// #endregion
+/* ========================= END BLOCK 7.5 ============================== */
+
+/* ======================================================================
+   [BLOCK 7.5] TOUCH INTERACTION GUARD (OWNER MODEL)
+   ====================================================================== */
+// #region
+/*
+   Ziel:
+   - exakt ein Nav-Item besitzt eine Touch-Interaktion
+   - verhindert Ghost-Clicks nach programmgesteuertem Scroll
+   - unabhängig von Scroll, Timing oder Layout
+   - Apple-like Gesture Ownership
+*/
+
+let activeTouchOwner = null;
+
+/**
+ * Ermittelt das relevante Nav-Item für einen Touch.
+ */
+function resolveNavItemFromEventTarget(target) {
+  return target.closest('.nav-item') || null;
+}
+
+/* --------------------------------------------------------------
+   POINTER EVENTS (bevorzugt)
+-------------------------------------------------------------- */
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+
+  // Nur neuen Owner setzen, wenn noch keiner aktiv ist
+  if (!activeTouchOwner) {
+    activeTouchOwner = resolveNavItemFromEventTarget(e.target);
+  }
+}, { passive: true });
+
+document.addEventListener('pointerup', e => {
+  if (e.pointerType !== 'touch') return;
+  activeTouchOwner = null;
+}, { passive: true });
+
+document.addEventListener('pointercancel', e => {
+  if (e.pointerType !== 'touch') return;
+  activeTouchOwner = null;
+}, { passive: true });
+
+/* --------------------------------------------------------------
+   SAFARI FALLBACK (touch events)
+-------------------------------------------------------------- */
+document.addEventListener('touchstart', e => {
+  if (activeTouchOwner) return;
+  activeTouchOwner = resolveNavItemFromEventTarget(e.target);
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  activeTouchOwner = null;
+}, { passive: true });
+
+document.addEventListener('touchcancel', () => {
+  activeTouchOwner = null;
+}, { passive: true });
+
+/**
+ * Prüft, ob ein Click zur aktuellen Touch-Sequenz gehört.
+ */
+function isClickAllowedForTouchOwner(clickTarget) {
+  if (!activeTouchOwner) return true; // kein Touch aktiv
+  const clickedItem = resolveNavItemFromEventTarget(clickTarget);
+  return clickedItem === activeTouchOwner;
+}
+// #endregion
+/* ========================= END BLOCK 7.5 ============================== */
+
+/* ======================================================================
    [BLOCK 8.0] TreeView – Selection Sync (Leafs)
    ====================================================================== */
 
@@ -1027,7 +1167,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 20260102-0009PM-CET';
+  const BUILD_INFO = 'Build: 20260102-0027PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
