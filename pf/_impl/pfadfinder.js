@@ -425,13 +425,54 @@ function setLeafAriaSelected(activeBtn) {
 /* ======================================================================
    [BLOCK 8] CLICK HANDLER (ROOT + SCOPE LOGIC)
    ====================================================================== */
+// #region
+
+/* --------------------------------------------------------------
+   Click-Gate: verhindert Ghost-Clicks während / nach Scroll
+-------------------------------------------------------------- */
+
+let navClicksBlocked = false;
+let navClickReleaseTimer = null;
+
+/**
+ * Sperrt weitere Nav-Aktivierungen temporär.
+ * Freigabe erfolgt kontrolliert:
+ * - nach mindestens 1 Animation-Frame
+ * - plus kurzem Touch-Flush (iOS Ghost-Click Schutz)
+ */
+function blockNavClicksTemporarily() {
+  navClicksBlocked = true;
+
+  if (navClickReleaseTimer) {
+    clearTimeout(navClickReleaseTimer);
+    navClickReleaseTimer = null;
+  }
+
+  requestAnimationFrame(() => {
+    // kurzer Cooldown, um iOS-Touch-Click sicher zu verwerfen
+    navClickReleaseTimer = setTimeout(() => {
+      navClicksBlocked = false;
+      navClickReleaseTimer = null;
+    }, 140); // bewusst kurz & deterministisch
+  });
+}
 
 document.addEventListener('click', e => {
+
+  /* --------------------------------------------------------------
+     GLOBAL CLICK-GATE
+     -------------------------------------------------------------- */
+  if (navClicksBlocked) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
 
   /* --------------------------------------------------------------
      ROOT-EXIT
      -------------------------------------------------------------- */
   if (e.target.closest('.nav-root-button')) {
+    blockNavClicksTemporarily();
     enterRootMode();
     return;
   }
@@ -441,6 +482,8 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const navBtn = e.target.closest('button[data-nav]');
   if (navBtn) {
+    blockNavClicksTemporarily();
+
     const li = navBtn.closest('.nav-item');
 
     /* Root-Current neu setzen */
@@ -474,6 +517,8 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const colBtn = e.target.closest('button[data-col]');
   if (colBtn) {
+    blockNavClicksTemporarily();
+
     const activeId = colBtn.getAttribute('data-col');
     const li = colBtn.closest('.nav-item');
 
@@ -520,6 +565,7 @@ document.addEventListener('click', e => {
   }
 });
 
+// #endregion
 /* ============================ END BLOCK 8 ============================ */
 
 /* ======================================================================
