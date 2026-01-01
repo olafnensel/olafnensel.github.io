@@ -757,14 +757,21 @@ document.addEventListener('keydown', e => {
 /* ======================================================================
    [BLOCK 10] NAV SCROLL – ACTIVE LEAF CENTERING
    ====================================================================== */
-
+// #region
 /*
    Ziel:
    - Aktives Leaf soll ruhig sichtbar bleiben
    - kein hartes scrollIntoView
    - nur scrollen, wenn Element außerhalb einer Komfortzone liegt
    - Apple-like Verhalten
+
+   NEU:
+   - während eines programmatischen Scrolls weitere Aktivierungen unterdrücken
+   - setzt temporären Scroll-Lock (navScrollInProgress)
 */
+
+// 🔒 NEU: globaler Scroll-Lock (wird von anderen Blöcken gelesen)
+let navScrollInProgress = false;
 
 function scrollActiveLeafIntoView(activeItem) {
   const scrollContainer = document.querySelector('.nav-scroll');
@@ -794,12 +801,27 @@ function scrollActiveLeafIntoView(activeItem) {
   const delta =
     itemCenter - containerCenter;
 
+  // 🔒 NEU: Scroll-Phase markieren
+  navScrollInProgress = true;
+
   scrollContainer.scrollBy({
     top: delta,
     behavior: 'smooth'
   });
-}
 
+  /*
+     🔓 NEU: Scroll-Lock kontrolliert lösen
+     - scrollend ist (noch) nicht überall zuverlässig
+     - daher: requestAnimationFrame + kurzer Timeout
+     - bewusst defensiv, nur für Touch-Szenarien relevant
+  */
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      navScrollInProgress = false;
+    }, 120);
+  });
+}
+// #endregion
 /* ============================ END BLOCK 10 ============================ */
 
 /* ======================================================================
