@@ -428,41 +428,70 @@ function setLeafAriaSelected(activeBtn) {
 // #region
 
 /* --------------------------------------------------------------
-   Click-Gate: verhindert Ghost-Clicks während / nach Scroll
+   Touch-Gate: verhindert iOS Ghost-Activations bei Touch + Scroll
 -------------------------------------------------------------- */
 
-let navClicksBlocked = false;
-let navClickReleaseTimer = null;
+let navTouchActive = false;
+let navTouchReleaseTimer = null;
 
 /**
- * Sperrt weitere Nav-Aktivierungen temporär.
- * Freigabe erfolgt kontrolliert:
- * - nach mindestens 1 Animation-Frame
- * - plus kurzem Touch-Flush (iOS Ghost-Click Schutz)
+ * Touch-Lock setzen (nur für echte Touch-Gesten).
+ * Clicks werden unterdrückt, solange der Touch „lebt“.
  */
-function blockNavClicksTemporarily() {
-  navClicksBlocked = true;
+function lockNavForTouch() {
+  navTouchActive = true;
 
-  if (navClickReleaseTimer) {
-    clearTimeout(navClickReleaseTimer);
-    navClickReleaseTimer = null;
+  if (navTouchReleaseTimer) {
+    clearTimeout(navTouchReleaseTimer);
+    navTouchReleaseTimer = null;
+  }
+}
+
+/**
+ * Touch-Lock verzögert freigeben.
+ * Kurzer Delay nötig, um iOS Re-Hit-Testing nach Scroll abzufangen.
+ */
+function releaseNavAfterTouch() {
+  if (navTouchReleaseTimer) {
+    clearTimeout(navTouchReleaseTimer);
   }
 
-  requestAnimationFrame(() => {
-    // kurzer Cooldown, um iOS-Touch-Click sicher zu verwerfen
-    navClickReleaseTimer = setTimeout(() => {
-      navClicksBlocked = false;
-      navClickReleaseTimer = null;
-    }, 140); // bewusst kurz & deterministisch
-  });
+  navTouchReleaseTimer = setTimeout(() => {
+    navTouchActive = false;
+    navTouchReleaseTimer = null;
+  }, 120); // bewusst kurz, stabil auf iOS
 }
+
+/* --------------------------------------------------------------
+   Touch Lifecycle (entscheidend!)
+-------------------------------------------------------------- */
+
+document.addEventListener('touchstart', e => {
+  if (e.target.closest('.nav-pane')) {
+    lockNavForTouch();
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  if (navTouchActive) {
+    releaseNavAfterTouch();
+  }
+}, { passive: true });
+
+document.addEventListener('touchcancel', () => {
+  releaseNavAfterTouch();
+});
+
+/* --------------------------------------------------------------
+   Click Handler
+-------------------------------------------------------------- */
 
 document.addEventListener('click', e => {
 
   /* --------------------------------------------------------------
-     GLOBAL CLICK-GATE
+     GLOBAL TOUCH-GATE
      -------------------------------------------------------------- */
-  if (navClicksBlocked) {
+  if (navTouchActive) {
     e.preventDefault();
     e.stopPropagation();
     return;
@@ -472,7 +501,6 @@ document.addEventListener('click', e => {
      ROOT-EXIT
      -------------------------------------------------------------- */
   if (e.target.closest('.nav-root-button')) {
-    blockNavClicksTemporarily();
     enterRootMode();
     return;
   }
@@ -482,8 +510,6 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const navBtn = e.target.closest('button[data-nav]');
   if (navBtn) {
-    blockNavClicksTemporarily();
-
     const li = navBtn.closest('.nav-item');
 
     /* Root-Current neu setzen */
@@ -517,8 +543,6 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const colBtn = e.target.closest('button[data-col]');
   if (colBtn) {
-    blockNavClicksTemporarily();
-
     const activeId = colBtn.getAttribute('data-col');
     const li = colBtn.closest('.nav-item');
 
@@ -932,7 +956,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 2026-01-01 18:42';
+  const BUILD_INFO = 'Build: 2026-01-01 11:35 PM CET (UTC+1)';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
