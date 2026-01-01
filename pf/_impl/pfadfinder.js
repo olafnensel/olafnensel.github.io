@@ -956,7 +956,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 2026-01-01 11:35 PM CET (UTC+1)';
+  const BUILD_INFO = 'Build: 20260101-1156PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
