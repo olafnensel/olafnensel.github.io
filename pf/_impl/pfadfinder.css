@@ -1338,6 +1338,7 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 
 .home-quicklinks {
   list-style: disc;
+  margin: 0.35rem 0;
 }
 
 /* --------------------------------------------------------- */
@@ -1372,6 +1373,11 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
   /* falls Zeilenumbruch: Box bleibt sauber */
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+.home .meta {
+  font-size: 0.85em;
+  color: var(--text-muted-weak);
 }
 
 /* --------------------------------------------------------- */
