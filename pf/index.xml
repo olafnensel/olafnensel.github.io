@@ -155,8 +155,14 @@
             /* ========================================================= */
             main {
             max-width: 68ch;
-            margin: 3rem auto;
+            margin: 2rem auto;
             padding: 0 1rem;
+            }
+
+            @media (max-width: 480px) {
+            main {
+            margin: 1.25rem auto;
+            }
             }
 
             /* ========================================================= */
