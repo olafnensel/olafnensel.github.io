@@ -393,6 +393,77 @@ function enterScopeMode(activeLeafItem, activeId) {
 /* ============================ END BLOCK 7 ============================ */
 
 /* ======================================================================
+   [BLOCK 7a] TOUCH GUARD (iOS Ghost-Click Protection)
+   ====================================================================== */
+// #region
+/*
+   Ziel:
+   - verhindert Mehrfach-Aktivierungen durch iOS Touch-Re-Hit-Testing
+   - genau EINE Navigation pro Touch-Lifecycle
+   - keine Zeitheuristik, keine Scroll-Abhängigkeit
+
+   Prinzip:
+   - Touch → Guard aktiv
+   - Guard bleibt aktiv bis:
+     touchend + nächster Animation-Frame
+   - Maus / Trackpad NICHT betroffen
+*/
+
+let touchGuardActive = false;
+
+/* --------------------------------------------------------------
+   Touch Lifecycle
+-------------------------------------------------------------- */
+
+// echter Touch startet → Guard aktivieren
+document.addEventListener(
+  'touchstart',
+  () => {
+    touchGuardActive = true;
+  },
+  { passive: true }
+);
+
+// Touch endet → Guard erst NACH dem Frame freigeben
+document.addEventListener(
+  'touchend',
+  () => {
+    requestAnimationFrame(() => {
+      touchGuardActive = false;
+    });
+  },
+  { passive: true }
+);
+
+// Sicherheitsnetz: falls Touch abbricht (System-Geste etc.)
+document.addEventListener(
+  'touchcancel',
+  () => {
+    touchGuardActive = false;
+  },
+  { passive: true }
+);
+
+/* --------------------------------------------------------------
+   Click Gate (nur Touch!)
+-------------------------------------------------------------- */
+document.addEventListener(
+  'click',
+  e => {
+    // Maus / Trackpad dürfen immer
+    if (!touchGuardActive) return;
+
+    // Touch-Click blockieren
+    e.preventDefault();
+    e.stopPropagation();
+  },
+  true // capture: vor allen anderen Click-Handlern
+);
+
+// #endregion
+/* ============================ END BLOCK 7a ============================ */
+
+/* ======================================================================
    [BLOCK 8.0] TreeView – Selection Sync (Leafs)
    ====================================================================== */
 
@@ -956,7 +1027,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 20260101-1156PM-CET';
+  const BUILD_INFO = 'Build: 20260102-0009PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
