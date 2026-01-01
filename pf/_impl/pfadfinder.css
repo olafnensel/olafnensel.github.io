@@ -224,6 +224,26 @@ body {
   overflow: hidden;
 }
 
+/* Fließtext erlaubt */
+.entry,
+.entry-trail,
+.entry-trail-full,
+.home p,
+.home li {
+  hyphens: auto;
+}
+
+/* UI / Navigation deaktiviert */
+nav,
+.nav-pane,
+button,
+.entry-title,
+.header-text,
+.jumpmarks,
+.trail-mode-control {
+  hyphens: none;
+}
+
 /* automatische Silbentrennung ----------------------------- */
 /*
    Voraussetzungen:
@@ -243,6 +263,7 @@ html {
   overflow-wrap: normal;
   word-break: normal;
 }
+
 
 /* ======================= END 2 ============================ */
 
@@ -1398,7 +1419,12 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 .home .meta {
   font-size: 0.85em;
   color: var(--text-muted-weak);
-}
+  }
+
+.home .example {
+  margin-bottom: 1.5em;
+  }
+
 
 /* --------------------------------------------------------- */
 /* Sichtbarkeitslogik: Home nur zeigen, wenn kein Content aktiv */
