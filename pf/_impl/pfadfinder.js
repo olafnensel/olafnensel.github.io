@@ -913,6 +913,42 @@ function scrollActiveLeafIntoView(activeItem) {
 
 /* ============================ END BLOCK 11 ============================ */
 
+/* ======================================================================
+   [BLOCK 11a] DEV BUILD INFO (Debug only)
+   ====================================================================== */
+// #region
+/*
+   Ziel:
+   - Eindeutiger Laufzeit-Nachweis, dass DIESES JS geladen wurde
+   - Anzeige NUR im DEV-Mode
+   - statischer Text (kein Build-System nötig)
+   - keinerlei Seiteneffekte
+
+   Hinweis:
+   - Dieser Block ist rein diagnostisch und kann später vollständig entfernt werden.
+*/
+
+(function () {
+
+  if (!isDevMode()) return;
+
+  const BUILD_INFO = 'Build: 2026-01-01 18:42';
+
+  const devTools = document.querySelector('.dev-tools');
+  if (!devTools) return;
+
+  const info = document.createElement('div');
+  info.className = 'dev-build-info';
+  info.textContent = BUILD_INFO;
+
+  devTools.appendChild(info);
+
+  // Zusätzliches Signal im Dev-Console-Log (Remote Inspector)
+  console.info('[PF DEV]', BUILD_INFO);
+
+})();
+// #endregion
+/* ========================== END BLOCK 11a ============================= */
 
 /* ======================================================================
    [BLOCK 12] DEV TOOLS
