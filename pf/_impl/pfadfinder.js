@@ -1167,8 +1167,6 @@ document.addEventListener('click', function (event) {
 });
 /* END BLOCK 15 ============================================ */
 
-
-
 /* ========================================================= */
 /* [BLOCK 16] MINI-BACKLINK (JUMPMARK → SEITENANFANG)        */
 /* ========================================================= */
@@ -1176,29 +1174,34 @@ document.addEventListener('click', function (event) {
 /*
    Ziel:
    - nach Jumpmark-Navigation kontextuellen Rücksprung anbieten
-   - Rücksprung IMMER zum Seitenanfang (main)
-   - kein Zurück zur Jumpmark (Scroll), ABER:
-     Fokus soll zurück zur zuletzt genutzten Jumpmark (A11y / mentale Kontinuität)
+   - Rücksprung:
+       Desktop → Scroll-Container (main)
+       Mobile  → Dokument (window)
+   - KEIN Zurück-Scroll zur Jumpmark
+   - Fokus kehrt zur zuletzt genutzten Jumpmark zurück (A11y)
    - Event-Delegation, keine Inline-Styles
 
    Fixes:
-   - Jumpmarks können auf ein INNERES Element zeigen (nicht auf .entry).
-     -> wir aktivieren den Backlink für das nächstgelegene .entry.
-   - Backlink kann durch aria-hidden oder hidden versteckt sein.
-     -> aktiver Zustand entfernt beides defensiv.
+   - Jumpmarks können auf innere Elemente zeigen
+   - Mini-Backlink kann via aria-hidden / hidden versteckt sein
+     → aktiver Zustand gewinnt immer
 */
 
 (function () {
 
-  // ✅ Merkt die zuletzt ausgelöste Jumpmark (DOM-Referenz, keine IDs nötig)
+  // Merkt die zuletzt ausgelöste Jumpmark (DOM-Referenz)
   let lastJumpmarkEl = null;
 
   /* ---------------------------------------------------------
      Helper
   --------------------------------------------------------- */
 
+  function getMain() {
+    return document.querySelector('main');
+  }
+
   function getActiveSection() {
-    const main = document.querySelector('main');
+    const main = getMain();
     if (!main) return null;
     return main.querySelector('.collection-section.active') || main;
   }
@@ -1207,11 +1210,9 @@ document.addEventListener('click', function (event) {
     const scope = getActiveSection();
     if (!scope) return null;
 
-    const candidate = scope.querySelector(
+    return scope.querySelector(
       '.jumpmarks a[href], .jumpmarks a, a[href], button:not([disabled])'
     );
-
-    return candidate || null;
   }
 
   function resetMiniBacklinks() {
@@ -1233,8 +1234,6 @@ document.addEventListener('click', function (event) {
     resetMiniBacklinks();
 
     backlink.classList.add('is-active');
-
-    // Defensive: aktiv muss sichtbar sein, auch wenn vorher versteckt
     backlink.removeAttribute('aria-hidden');
     backlink.removeAttribute('hidden');
     backlink.hidden = false;
@@ -1242,7 +1241,6 @@ document.addEventListener('click', function (event) {
 
   /* ---------------------------------------------------------
      Jumpmark → Mini-Backlink aktivieren
-     (Ziel-Entry über href-Fragment bestimmen)
   --------------------------------------------------------- */
   document.addEventListener('click', function (event) {
     const jumpmark = event.target.closest('.jumpmarks a');
@@ -1251,16 +1249,16 @@ document.addEventListener('click', function (event) {
     const href = jumpmark.getAttribute('href');
     if (!href || !href.startsWith('#')) return;
 
-    // ✅ merken, welche Jumpmark benutzt wurde (für Fokus-Rückkehr)
     lastJumpmarkEl = jumpmark;
 
     const targetId = href.slice(1);
     const targetEl = document.getElementById(targetId);
     if (!targetEl) return;
 
-    const entry = targetEl.classList.contains('entry')
-      ? targetEl
-      : targetEl.closest('.entry');
+    const entry =
+      targetEl.classList.contains('entry')
+        ? targetEl
+        : targetEl.closest('.entry');
 
     if (!entry) return;
 
@@ -1268,12 +1266,14 @@ document.addEventListener('click', function (event) {
   });
 
   /* ---------------------------------------------------------
-     Keyboard: Space auf Links wie Klick behandeln
+     Keyboard: Space wie Klick behandeln
   --------------------------------------------------------- */
   document.addEventListener('keydown', function (event) {
     if (event.key !== ' ') return;
 
-    const link = event.target.closest('.jumpmarks a, .entry-mini-backlink');
+    const link = event.target.closest(
+      '.jumpmarks a, .entry-mini-backlink'
+    );
     if (!link) return;
 
     event.preventDefault();
@@ -1281,7 +1281,7 @@ document.addEventListener('click', function (event) {
   });
 
   /* ---------------------------------------------------------
-     Mini-Backlink → Scroll + Fokus
+     Mini-Backlink → Scroll + Fokus (VARIANTE A)
   --------------------------------------------------------- */
   document.addEventListener('click', function (event) {
     const backlink = event.target.closest('.entry-mini-backlink');
@@ -1289,15 +1289,22 @@ document.addEventListener('click', function (event) {
 
     event.preventDefault();
 
-    const scrollContainer = document.querySelector('main');
-    if (!scrollContainer) return;
+    const main = getMain();
 
-    scrollContainer.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // 🔑 VARIANTE A:
+    // Wenn main scrollbar ist → main scrollen
+    // sonst → Dokument scrollen (Mobile)
+    const canScrollMain =
+      main &&
+      main.scrollHeight > main.clientHeight;
 
-    // ✅ Fokus zurück zur zuletzt genutzten Jumpmark (wenn noch im DOM & im aktiven Bereich)
+    if (canScrollMain) {
+      main.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Fokus zurück zur zuletzt genutzten Jumpmark
     const activeScope = getActiveSection();
     const canUseLast =
       lastJumpmarkEl &&
@@ -1305,7 +1312,8 @@ document.addEventListener('click', function (event) {
       lastJumpmarkEl.matches('.jumpmarks a') &&
       (!activeScope || activeScope.contains(lastJumpmarkEl));
 
-    const focusTarget = canUseLast ? lastJumpmarkEl : getPageTopTarget();
+    const focusTarget =
+      canUseLast ? lastJumpmarkEl : getPageTopTarget();
 
     if (focusTarget) {
       requestAnimationFrame(() => {
