@@ -569,22 +569,24 @@ function setLeafAriaSelected(activeBtn) {
 // #region
 
 /* --------------------------------------------------------------
-   HARD TOUCH-CLICK GATE (Owner-basiert, deterministisch)
+   Touch Commit Gate
+   - exakt EIN Nav-Commit pro Touch-Sequenz
 -------------------------------------------------------------- */
 
-/**
- * Prüft, ob ein Click verarbeitet werden darf.
- * - Maus / Keyboard: immer erlaubt
- * - Touch: nur erlaubt, wenn Click-Ziel dem aktiven Touch-Owner entspricht
- */
-function isNavClickAllowed(event) {
-  // Kein Touch aktiv → normaler Click (Desktop / Maus / Keyboard)
-  if (!activeTouchOwner) return true;
+let touchCommitDone = false;
 
-  // Touch aktiv → Click muss zum Owner gehören
-  const clickedItem = event.target.closest('.nav-item');
-  return clickedItem === activeTouchOwner;
-}
+/* Reset bei neuer Touch-Geste */
+document.addEventListener('touchstart', () => {
+  touchCommitDone = false;
+}, { passive: true });
+
+document.addEventListener('touchend', () => {
+  touchCommitDone = false;
+}, { passive: true });
+
+document.addEventListener('touchcancel', () => {
+  touchCommitDone = false;
+}, { passive: true });
 
 /* --------------------------------------------------------------
    Click Handler
@@ -593,9 +595,10 @@ function isNavClickAllowed(event) {
 document.addEventListener('click', e => {
 
   /* --------------------------------------------------------------
-     GLOBAL TOUCH-OWNERSHIP GATE (ABSOLUT)
+     COMMIT-GATE
+     - blockiert alle weiteren Clicks derselben Touch-Sequenz
      -------------------------------------------------------------- */
-  if (!isNavClickAllowed(e)) {
+  if (touchCommitDone) {
     e.preventDefault();
     e.stopPropagation();
     return;
@@ -605,6 +608,7 @@ document.addEventListener('click', e => {
      ROOT-EXIT
      -------------------------------------------------------------- */
   if (e.target.closest('.nav-root-button')) {
+    touchCommitDone = true;
     enterRootMode();
     return;
   }
@@ -614,17 +618,17 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const navBtn = e.target.closest('button[data-nav]');
   if (navBtn) {
+    touchCommitDone = true;
+
     const li = navBtn.closest('.nav-item');
 
-    /* Root-Current neu setzen */
     qsa('.nav-item.is-root-current')
       .forEach(el => el.classList.remove('is-root-current', 'is-root-leaf'));
 
     li.classList.add('is-root-current');
     syncAriaCurrent();
-    li.classList.remove('is-root-leaf'); // Parent ≠ Leaf
+    li.classList.remove('is-root-leaf');
 
-    /* andere Parents schließen */
     qsa('.nav-item.open').forEach(el => {
       if (el !== li) {
         el.classList.remove('open');
@@ -634,11 +638,9 @@ document.addEventListener('click', e => {
     });
 
     const expanded = li.classList.toggle('open');
-
-    /* aria-expanded als String setzen */
     navBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 
-    enterRootMode(); /* macht auch syncExpandedStates() */
+    enterRootMode();
     return;
   }
 
@@ -647,43 +649,37 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const colBtn = e.target.closest('button[data-col]');
   if (colBtn) {
+    touchCommitDone = true;
+
     const activeId = colBtn.getAttribute('data-col');
     const li = colBtn.closest('.nav-item');
 
-    /* Root-Current immer eindeutig setzen */
     qsa('.nav-item.is-root-current')
       .forEach(el => el.classList.remove('is-root-current', 'is-root-leaf'));
 
     li.classList.add('is-root-current');
     syncAriaCurrent();
 
-    /* ROOT-LEAF explizit markieren */
     const hasParent = li.closest('.nav-children');
     if (!hasParent) {
       li.classList.add('is-root-leaf');
     }
 
-    /* aktives Ziel */
     qsa('.nav-item.active')
       .forEach(el => el.classList.remove('active'));
     li.classList.add('active');
 
-    /* ARIA – aktives Leaf als selected markieren */
     setLeafAriaSelected(colBtn);
-
     scrollActiveLeafIntoView(li);
 
-    /* Content wechseln */
     qsa('.collection-section.active')
       .forEach(el => el.classList.remove('active'));
 
     const target = document.getElementById(activeId);
     if (target) target.classList.add('active');
 
-    // Startseite sofort aus dem Tab-Flow nehmen, sobald Content aktiv ist
     syncHomeVisibility();
 
-    /* Scope nur bei echten Child-Leafs */
     if (hasParent) {
       enterScopeMode(li, activeId);
     } else {
@@ -1060,7 +1056,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 20260102-0049PM-CET';
+  const BUILD_INFO = 'Build: 20260102-0056PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
