@@ -156,12 +156,16 @@
             main {
             max-width: 68ch;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding:
+            env(safe-area-inset-top)
+            1rem
+            env(safe-area-inset-bottom);
             }
 
-            @media (max-width: 480px) {
+            /* Smartphones: Text darf fast vollflächig sein */
+            @media (max-width: 600px) {
             main {
-            margin: 1.25rem auto;
+            max-width: 100%;
             }
             }
 
@@ -269,7 +273,7 @@
         </head>
         <body>
           <main>
-            <h1>Der Pfadfinder hat eine neue Adresse 1</h1>
+            <h1>Der Pfadfinder hat eine neue Adresse 2</h1>
 
             <p>
               Der Pfadfinder ist umgezogen und jetzt unter einer neuen Adresse erreichbar –
