@@ -215,7 +215,40 @@ function syncAriaCurrent() {
   }
 }
 
-/* ============================ END BLOCK 3d ============================ */
+
+/* ======================================================================
+   [BLOCK 3e] URL HASH CONTROL (Jumpmarks ohne #entry-id…)
+   ====================================================================== */
+
+/*
+   Ziel:
+   - Jumpmarks (im Content) sollen scrollen, aber KEIN Fragment (#...) in die URL schreiben
+   - vorhandene Fragmente sollen beim Leaf-Wechsel entfernt werden
+*/
+
+function clearUrlHash() {
+  if (!window.location.hash) return;
+  history.replaceState(
+    null,
+    '',
+    window.location.pathname + window.location.search
+  );
+}
+
+function scrollToJumpTarget(targetEl) {
+  if (!targetEl || typeof targetEl.scrollIntoView !== 'function') return;
+
+  const prefersReduced =
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  targetEl.scrollIntoView({
+    behavior: prefersReduced ? 'auto' : 'smooth',
+    block: 'start'
+  });
+}
+
+/* ============================ END BLOCK 3e ============================ */
 
 /* ======================================================================
    [BLOCK 4] FIXED PARENT (SCOPE MIRROR)
@@ -375,7 +408,7 @@ function enterScopeMode(activeLeafItem, activeId) {
   activeLeafItem.classList.add('active');
 
   /* Aktives Leaf sanft ins Blickfeld bringen */
-  scrollActiveLeafIntoView(activeLeafItem);
+  // scrollActiveLeafIntoView(activeLeafItem);
 
   /* Alles außerhalb des Scopes ausblenden */
   qsa('.nav-item').forEach(li => {
@@ -388,150 +421,16 @@ function enterScopeMode(activeLeafItem, activeId) {
 
   setNavState(NAV_STATE.SCOPE, 'enterScopeMode');
   applyNavState();
+
+  // ✅ Nach dem State-Apply scrollen, damit der Leaf auch dann sichtbar ist,
+  // wenn er vorher (Parent zu) im Root-Mode noch nicht gerendert/angezeigt war.
+  requestAnimationFrame(() => {
+    const btn = activeLeafItem?.querySelector?.('button[role="treeitem"]');
+    scrollActiveLeafIntoView(btn || activeLeafItem);
+  });
 }
 
 /* ============================ END BLOCK 7 ============================ */
-
-/* ======================================================================
-   [BLOCK 7a] TOUCH GUARD (iOS Ghost-Click Protection)
-   ====================================================================== */
-// #region
-/*
-   Ziel:
-   - verhindert Mehrfach-Aktivierungen durch iOS Touch-Re-Hit-Testing
-   - genau EINE Navigation pro Touch-Lifecycle
-   - keine Zeitheuristik, keine Scroll-Abhängigkeit
-
-   Prinzip:
-   - Touch → Guard aktiv
-   - Guard bleibt aktiv bis:
-     touchend + nächster Animation-Frame
-   - Maus / Trackpad NICHT betroffen
-*/
-
-let touchGuardActive = false;
-
-/* --------------------------------------------------------------
-   Touch Lifecycle
--------------------------------------------------------------- */
-
-// echter Touch startet → Guard aktivieren
-document.addEventListener(
-  'touchstart',
-  () => {
-    touchGuardActive = true;
-  },
-  { passive: true }
-);
-
-// Touch endet → Guard erst NACH dem Frame freigeben
-document.addEventListener(
-  'touchend',
-  () => {
-    requestAnimationFrame(() => {
-      touchGuardActive = false;
-    });
-  },
-  { passive: true }
-);
-
-// Sicherheitsnetz: falls Touch abbricht (System-Geste etc.)
-document.addEventListener(
-  'touchcancel',
-  () => {
-    touchGuardActive = false;
-  },
-  { passive: true }
-);
-
-/* --------------------------------------------------------------
-   Click Gate (nur Touch!)
--------------------------------------------------------------- */
-document.addEventListener(
-  'click',
-  e => {
-    // Maus / Trackpad dürfen immer
-    if (!touchGuardActive) return;
-
-    // Touch-Click blockieren
-    e.preventDefault();
-    e.stopPropagation();
-  },
-  true // capture: vor allen anderen Click-Handlern
-);
-
-// #endregion
-/* ============================ END BLOCK 7a ============================ */
-
-/* ======================================================================
-   [BLOCK 7.5] TOUCH INTERACTION GUARD (OWNER MODEL)
-   ====================================================================== */
-// #region
-/*
-   Ziel:
-   - exakt ein Nav-Item besitzt eine Touch-Interaktion
-   - verhindert Ghost-Clicks nach programmgesteuertem Scroll
-   - unabhängig von Scroll, Timing oder Layout
-   - Apple-like Gesture Ownership
-*/
-
-let activeTouchOwner = null;
-
-/**
- * Ermittelt das relevante Nav-Item für einen Touch.
- */
-function resolveNavItemFromEventTarget(target) {
-  return target.closest('.nav-item') || null;
-}
-
-/* --------------------------------------------------------------
-   POINTER EVENTS (bevorzugt)
--------------------------------------------------------------- */
-document.addEventListener('pointerdown', e => {
-  if (e.pointerType !== 'touch') return;
-
-  // Nur neuen Owner setzen, wenn noch keiner aktiv ist
-  if (!activeTouchOwner) {
-    activeTouchOwner = resolveNavItemFromEventTarget(e.target);
-  }
-}, { passive: true });
-
-document.addEventListener('pointerup', e => {
-  if (e.pointerType !== 'touch') return;
-  activeTouchOwner = null;
-}, { passive: true });
-
-document.addEventListener('pointercancel', e => {
-  if (e.pointerType !== 'touch') return;
-  activeTouchOwner = null;
-}, { passive: true });
-
-/* --------------------------------------------------------------
-   SAFARI FALLBACK (touch events)
--------------------------------------------------------------- */
-document.addEventListener('touchstart', e => {
-  if (activeTouchOwner) return;
-  activeTouchOwner = resolveNavItemFromEventTarget(e.target);
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-  activeTouchOwner = null;
-}, { passive: true });
-
-document.addEventListener('touchcancel', () => {
-  activeTouchOwner = null;
-}, { passive: true });
-
-/**
- * Prüft, ob ein Click zur aktuellen Touch-Sequenz gehört.
- */
-function isClickAllowedForTouchOwner(clickTarget) {
-  if (!activeTouchOwner) return true; // kein Touch aktiv
-  const clickedItem = resolveNavItemFromEventTarget(clickTarget);
-  return clickedItem === activeTouchOwner;
-}
-// #endregion
-/* ========================= END BLOCK 7.5 ============================== */
 
 /* ======================================================================
    [BLOCK 8.0] TreeView – Selection Sync (Leafs)
@@ -566,49 +465,13 @@ function setLeafAriaSelected(activeBtn) {
 /* ======================================================================
    [BLOCK 8] CLICK HANDLER (ROOT + SCOPE LOGIC)
    ====================================================================== */
-// #region
-
-/* --------------------------------------------------------------
-   Touch Commit Gate
-   - exakt EIN Nav-Commit pro Touch-Sequenz
--------------------------------------------------------------- */
-
-let touchCommitDone = false;
-
-/* Reset bei neuer Touch-Geste */
-document.addEventListener('touchstart', () => {
-  touchCommitDone = false;
-}, { passive: true });
-
-document.addEventListener('touchend', () => {
-  touchCommitDone = false;
-}, { passive: true });
-
-document.addEventListener('touchcancel', () => {
-  touchCommitDone = false;
-}, { passive: true });
-
-/* --------------------------------------------------------------
-   Click Handler
--------------------------------------------------------------- */
 
 document.addEventListener('click', e => {
-
-  /* --------------------------------------------------------------
-     COMMIT-GATE
-     - blockiert alle weiteren Clicks derselben Touch-Sequenz
-     -------------------------------------------------------------- */
-  if (touchCommitDone) {
-    e.preventDefault();
-    e.stopPropagation();
-    return;
-  }
 
   /* --------------------------------------------------------------
      ROOT-EXIT
      -------------------------------------------------------------- */
   if (e.target.closest('.nav-root-button')) {
-    touchCommitDone = true;
     enterRootMode();
     return;
   }
@@ -618,17 +481,17 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const navBtn = e.target.closest('button[data-nav]');
   if (navBtn) {
-    touchCommitDone = true;
-
     const li = navBtn.closest('.nav-item');
 
+    /* Root-Current neu setzen */
     qsa('.nav-item.is-root-current')
       .forEach(el => el.classList.remove('is-root-current', 'is-root-leaf'));
 
     li.classList.add('is-root-current');
     syncAriaCurrent();
-    li.classList.remove('is-root-leaf');
+    li.classList.remove('is-root-leaf'); // Parent ≠ Leaf
 
+    /* andere Parents schließen */
     qsa('.nav-item.open').forEach(el => {
       if (el !== li) {
         el.classList.remove('open');
@@ -638,9 +501,11 @@ document.addEventListener('click', e => {
     });
 
     const expanded = li.classList.toggle('open');
+
+    /* aria-expanded als String setzen */
     navBtn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 
-    enterRootMode();
+    enterRootMode(); /* macht auch syncExpandedStates() */
     return;
   }
 
@@ -649,37 +514,46 @@ document.addEventListener('click', e => {
      -------------------------------------------------------------- */
   const colBtn = e.target.closest('button[data-col]');
   if (colBtn) {
-    touchCommitDone = true;
-
     const activeId = colBtn.getAttribute('data-col');
     const li = colBtn.closest('.nav-item');
 
+    // URL: keine Jumpmark-Fragmente beibehalten
+    clearUrlHash();
+
+    /* Root-Current immer eindeutig setzen */
     qsa('.nav-item.is-root-current')
       .forEach(el => el.classList.remove('is-root-current', 'is-root-leaf'));
 
     li.classList.add('is-root-current');
     syncAriaCurrent();
 
+    /* ROOT-LEAF explizit markieren */
     const hasParent = li.closest('.nav-children');
     if (!hasParent) {
       li.classList.add('is-root-leaf');
     }
 
+    /* aktives Ziel */
     qsa('.nav-item.active')
       .forEach(el => el.classList.remove('active'));
     li.classList.add('active');
 
+    /* ARIA – aktives Leaf als selected markieren */
     setLeafAriaSelected(colBtn);
+
     scrollActiveLeafIntoView(li);
 
+    /* Content wechseln */
     qsa('.collection-section.active')
       .forEach(el => el.classList.remove('active'));
 
     const target = document.getElementById(activeId);
     if (target) target.classList.add('active');
 
+    // Startseite sofort aus dem Tab-Flow nehmen, sobald Content aktiv ist
     syncHomeVisibility();
 
+    /* Scope nur bei echten Child-Leafs */
     if (hasParent) {
       enterScopeMode(li, activeId);
     } else {
@@ -689,7 +563,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// #endregion
 /* ============================ END BLOCK 8 ============================ */
 
 /* ======================================================================
@@ -927,67 +800,132 @@ document.addEventListener('keydown', e => {
 /* ======================================================================
    [BLOCK 10] NAV SCROLL – ACTIVE LEAF CENTERING
    ====================================================================== */
-// #region
+
 /*
    Ziel:
    - Aktives Leaf soll ruhig sichtbar bleiben
    - kein hartes scrollIntoView
    - nur scrollen, wenn Element außerhalb einer Komfortzone liegt
    - Apple-like Verhalten
-
-   NEU:
-   - während eines programmatischen Scrolls weitere Aktivierungen unterdrücken
-   - setzt temporären Scroll-Lock (navScrollInProgress)
 */
 
-// 🔒 NEU: globaler Scroll-Gate (wird von Block 8 gelesen)
-let navScrollInProgress = false;
-
 function scrollActiveLeafIntoView(activeItem) {
-  const scrollContainer = document.querySelector('.nav-scroll');
+  // Desktop: scroll container is usually `.nav-scroll`.
+  // Mobile: `.nav-scroll` may be non-scrollable and `.nav-pane` becomes scrollable.
+  // We therefore pick the container that is ACTUALLY scrollable.
+
+  const navScroll = document.querySelector('.nav-scroll');
+  const navPane = document.querySelector('.nav-pane');
+
+  function isScrollable(el) {
+    if (!el) return false;
+    const cs = window.getComputedStyle(el);
+    const oy = cs.overflowY;
+    const canScroll = (oy === 'auto' || oy === 'scroll');
+    return canScroll && (el.scrollHeight > el.clientHeight + 1);
+  }
+
+  const scrollContainer =
+    (isScrollable(navScroll) ? navScroll : null) ||
+    (isScrollable(navPane) ? navPane : null) ||
+    navScroll ||
+    navPane;
+
   if (!scrollContainer || !activeItem) return;
 
+  // Prefer the actual treeitem button for stable geometry.
+  const target =
+    (activeItem.matches && activeItem.matches('button'))
+      ? activeItem
+      : (activeItem.querySelector && activeItem.querySelector('button[role="treeitem"]'))
+        ? activeItem.querySelector('button[role="treeitem"]')
+        : activeItem;
+
   const containerRect = scrollContainer.getBoundingClientRect();
-  const itemRect = activeItem.getBoundingClientRect();
+  const itemRect = target.getBoundingClientRect();
+
   const containerHeight = containerRect.height;
 
-  /* Komfortzone: mittlere 50 % */
+  // Comfort zone: middle 50%
   const comfortTop = containerRect.top + containerHeight * 0.25;
   const comfortBottom = containerRect.top + containerHeight * 0.75;
 
-  /* Item liegt vollständig innerhalb der Komfortzone → nichts tun */
-  if (itemRect.top >= comfortTop && itemRect.bottom <= comfortBottom) {
-    return;
+  if (itemRect.top >= comfortTop && itemRect.bottom <= comfortBottom) return;
+
+  // Convert to scrollTop coordinates
+  const currentTop = scrollContainer.scrollTop;
+  const itemTopInContainer = (itemRect.top - containerRect.top) + currentTop;
+  const itemCenterInContainer = itemTopInContainer + itemRect.height / 2;
+
+  const targetScrollTop = Math.max(0, itemCenterInContainer - containerHeight / 2);
+
+  const prefersReduced =
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const behavior = prefersReduced ? 'auto' : 'smooth';
+
+  // 1) Try scrollTo with behavior
+  try {
+    scrollContainer.scrollTo({ top: targetScrollTop, behavior });
+  } catch {
+    // 2) Fallback: direct assignment
+    scrollContainer.scrollTop = targetScrollTop;
   }
 
-  /* Zielposition: Item sanft Richtung Mitte bewegen */
-  const itemCenter = itemRect.top + itemRect.height / 2;
-  const containerCenter = containerRect.top + containerHeight / 2;
-  const delta = itemCenter - containerCenter;
-
-  /* --------------------------------------------------------------
-     🔒 Scroll-Gate aktivieren (VOR Scroll!)
-     -------------------------------------------------------------- */
-  navScrollInProgress = true;
-
-  scrollContainer.scrollBy({
-    top: delta,
-    behavior: 'smooth'
-  });
-
-  /* --------------------------------------------------------------
-     🔓 Scroll-Gate exakt nach Reflow freigeben
-     - 1 Animation-Frame für Layout / Scroll
-     - kurzer Timeout für iOS Hit-Test Flush
-     -------------------------------------------------------------- */
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      navScrollInProgress = false;
-    }, 80); // bewusst minimal, nicht timingkritisch
-  });
+  // 3) Hard fallback for browsers that ignore smooth inside overflow containers
+  if (behavior === 'smooth') {
+    requestAnimationFrame(() => {
+      const r = target.getBoundingClientRect();
+      if (r.top < comfortTop || r.bottom > comfortBottom) {
+        scrollContainer.scrollTop = targetScrollTop;
+      }
+    });
+  }
 }
-// #endregion
+
 /* ============================ END BLOCK 10 ============================ */
+
+/* ======================================================================
+   [BLOCK 10b] DEV TOOLS – HARD HIDE WHEN DISABLED
+   ====================================================================== */
+// #region
+// ✅ Wenn data-dev="false": DEV-Tools komplett ausblenden (keine "Restanzeige")
+// Patch-Typ B: nur DEV-UI, keine Nebenwirkungen für Navigation/State.
+(function ensureDevToolsHiddenWhenDisabled() {
+
+  function hide() {
+    if (isDevMode()) return;
+
+    // 1) DEV-Tools-Container (aus XSL) sicher verstecken
+    const devTools = document.querySelector('.dev-tools');
+    if (devTools) {
+      devTools.hidden = true;
+      devTools.style.display = 'none';
+      devTools.setAttribute('aria-hidden', 'true');
+    }
+
+    // 2) Falls Styles aus einer vorherigen Session/Hot-Reload existieren: entfernen
+    const style = document.getElementById('pf-devtools-style');
+    if (style) style.remove();
+
+    // 3) Falls stray Diagnostics/Build-Info außerhalb der Box existieren: entfernen
+    document
+      .querySelectorAll('.dev-build-info, .dev-diagnostics')
+      .forEach(el => {
+        if (!el.closest('.dev-tools')) el.remove();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hide);
+  } else {
+    hide();
+  }
+
+})();
+// #endregion
+/* ========================= END BLOCK 10b ============================== */
 
 /* ======================================================================
    ======================================================================
@@ -1033,50 +971,271 @@ function scrollActiveLeafIntoView(activeItem) {
 /* ============================ END BLOCK 11 ============================ */
 
 /* ======================================================================
-   [BLOCK 11a] DEV BUILD INFO (Debug only)
+   [BLOCK 11b] DEV BUILD INFO
    ====================================================================== */
 // #region
 /*
    Ziel:
-   - Eindeutiger Laufzeit-Nachweis, dass DIESES JS geladen wurde
-   - Anzeige NUR im DEV-Mode
-   - statischer Text (kein Build-System nötig)
-   - keinerlei Seiteneffekte
-
-   Hinweis:
-   - Dieser Block ist rein diagnostisch und kann später vollständig entfernt werden.
+   - deterministisch sichtbar machen, welches JS geladen wurde
+   - nur im DEV-Mode anzeigen
+   - ISO-8601 Timestamp (lokale Zeit)
+   - Ausgabe innerhalb der DEV-Tools-Box
 */
 
-(function () {
+// 🔧 MANUELLER BUILD-TIMESTAMP (ISO-8601, lokale Zeit)
+const BUILD_TIMESTAMP = '2026-01-02T12:46+01:00';
 
+function renderDevBuildInfo() {
   if (!isDevMode()) return;
-
-  const BUILD_INFO = 'Build: 20260102-0102PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
 
-  const info = document.createElement('div');
-  info.className = 'dev-build-info';
-  info.textContent = BUILD_INFO;
+  // Falls ein Build-Element außerhalb existiert: in die Box holen
+  const stray = document.querySelector('.dev-build-info');
+  if (stray && stray !== devTools && !devTools.contains(stray)) {
+    devTools.appendChild(stray);
+  }
 
-  devTools.appendChild(info);
+  // Build-Element erzeugen/aktualisieren
+  let info = devTools.querySelector('.dev-build-info');
+  if (!info) {
+    info = document.createElement('div');
+    info.className = 'dev-build-info';
+    devTools.appendChild(info);
+  }
 
-  // Zusätzliches Signal im Dev-Console-Log (Remote Inspector)
-  console.info('[PF DEV]', BUILD_INFO);
+  info.textContent = `Build: ${BUILD_TIMESTAMP}`;
+}
 
-})();
+// DOM-sicher initialisieren
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderDevBuildInfo);
+} else {
+  renderDevBuildInfo();
+}
 // #endregion
-/* ========================== END BLOCK 11a ============================= */
+/* ========================= END BLOCK 11b ============================== */
 
 /* ======================================================================
    [BLOCK 12] DEV TOOLS
    ====================================================================== */
-
+// #region
 const PF_DEV = (function () {
 
   function enabled() {
     return isDevMode();
+  }
+
+  function ensureDevToolsStyles() {
+    // DEV-only: keep the UI unobtrusive and out of the navigation header.
+    if (!enabled()) return;
+
+    // Avoid duplicate injections
+    if (document.getElementById('pf-devtools-style')) return;
+
+    const css = `
+      .dev-tools {
+        position: fixed !important;
+        top: auto !important;
+        left: auto !important;
+        right: 12px !important;
+        bottom: 12px !important;
+        z-index: 9999 !important;
+
+        width: 380px;
+        max-width: calc(100vw - 24px);
+        box-sizing: border-box;
+
+        /* wide + not very tall */
+        max-height: 180px;
+        overflow: auto;
+
+        padding: 12px;
+        border-radius: 12px;
+
+        background: rgba(0, 0, 0, 0.78);
+        color: #ffffff;
+
+        font-size: 12px;
+        line-height: 1.35;
+
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+
+      .dev-tools,
+      .dev-tools * {
+        box-sizing: border-box;
+      }
+
+      /* Keep the toggle readable inside the box */
+      .dev-tools .dev-dark-toggle {
+        display: inline-block;
+        margin: 0;
+        padding: 6px 10px;
+        border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.22);
+        background: rgba(255,255,255,0.10);
+        color: #ffffff;
+        font-size: 12px;
+        line-height: 1.2;
+      }
+
+      .dev-tools .dev-dark-toggle:focus-visible {
+        outline: 2px solid rgba(255,255,255,0.55);
+        outline-offset: 2px;
+      }
+
+      /* Diagnostics: make it copy-friendly (textarea) + scrollbar */
+      .dev-tools .dev-diagnostics {
+        margin-top: 10px;
+        margin-bottom: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+
+        background: rgba(255,255,255,0.10);
+        border: 1px solid rgba(255,255,255,0.14);
+
+        color: #ffffff;
+        display: block;
+        width: 100%;
+
+        /* Copy UX */
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        line-height: 1.35;
+
+        /* Scrollbar inside the diagnostics field */
+        height: 96px;
+        max-height: 96px;
+        overflow: auto;
+
+        /* Make selection reliable */
+        box-sizing: border-box;
+        resize: vertical;
+
+        /* Remove native textarea chrome */
+        outline: none;
+      }
+
+      .dev-tools .dev-build-info {
+        margin-top: 0;
+        opacity: 0.9;
+        color: #ffffff;
+        font-size: 12px;
+      }
+
+      /* On very small viewports: slightly narrower */
+      @media (max-width: 420px) {
+        .dev-tools {
+          width: calc(100vw - 24px);
+          max-height: 160px;
+        }
+        .dev-tools .dev-diagnostics {
+          height: 84px;
+          max-height: 84px;
+        }
+      }
+    `;
+
+    const style = document.createElement('style');
+    style.id = 'pf-devtools-style';
+    style.textContent = css;
+
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  function ensureDiagnosticsEl() {
+    const devTools = document.querySelector('.dev-tools');
+    if (!devTools) return null;
+
+    // Wenn es bereits ein Diagnostics-Element irgendwo gibt, aber NICHT in der Box:
+    const stray = document.querySelector('.dev-diagnostics');
+    if (stray && stray !== devTools && !devTools.contains(stray)) {
+      devTools.appendChild(stray);
+    }
+
+    let el = devTools.querySelector('.dev-diagnostics');
+    if (!el) {
+      el = document.createElement('textarea');
+      el.className = 'dev-diagnostics';
+      el.setAttribute('aria-label', 'Diagnostics');
+      el.setAttribute('readonly', '');
+      el.setAttribute('spellcheck', 'false');
+      el.setAttribute('wrap', 'off');
+
+      // Diagnostics zwischen Toggle und Build-Info einfügen (falls Build schon existiert)
+      const build = devTools.querySelector('.dev-build-info');
+      if (build) {
+        devTools.insertBefore(el, build);
+      } else {
+        devTools.appendChild(el);
+      }
+    }
+
+    return el;
+  }
+
+  function labelOf(li) {
+    if (!li) return '';
+    const btn = li.querySelector('button[role="treeitem"]');
+    const txt = (btn?.textContent || li.dataset?.label || '').trim();
+    return txt;
+  }
+
+  function summarize(selector, kind) {
+    const items = Array.from(document.querySelectorAll(selector));
+    if (!items.length) return `${kind}(0)`;
+
+    const first = items[0];
+    const id = first.id ? `#${first.id}` : '';
+    const label = labelOf(first);
+
+    return `${kind}(${items.length})=[${id} “${label}”]`;
+  }
+
+  function updateDiagnostics(reason = '') {
+    if (!enabled()) return;
+
+    const el = ensureDiagnosticsEl();
+    if (!el) return;
+
+    const lines = [];
+
+    // Meta
+    lines.push(reason ? `Diagnostics (${reason})` : 'Diagnostics');
+
+    // Navigation state (read-only)
+    lines.push(`navState=${currentNavState}`);
+
+    // Root-current / active / selected
+    lines.push(summarize('.nav-item.active', 'active'));
+    lines.push(summarize('.nav-item.is-root-current', 'rootCurrent'));
+
+    const selectedBtns = Array.from(
+      document.querySelectorAll('.nav-pane button[role="treeitem"][data-col][aria-selected="true"]')
+    );
+
+    if (!selectedBtns.length) {
+      lines.push('selected(0)');
+    } else {
+      const btn = selectedBtns[0];
+      const li = btn.closest('.nav-item');
+      const id = li?.id ? `#${li.id}` : '';
+      const label = (btn.textContent || li?.dataset?.label || '').trim();
+      lines.push(`selected(${selectedBtns.length})=[${id} “${label}”]`);
+    }
+
+    // Current content
+    lines.push(`activeContent=${currentActiveId || '∅'}`);
+
+    const text = lines.join('\n');
+    // textarea supports selecting/copying all content incl. off-screen
+    if ('value' in el) {
+      el.value = text;
+    } else {
+      el.textContent = text;
+    }
   }
 
   function onStateChange(from, to, reason, data) {
@@ -1089,11 +1248,43 @@ const PF_DEV = (function () {
     console.log('reason:', reason);
     console.log(data);
     console.groupEnd();
+
+    updateDiagnostics(reason || 'state-change');
+  }
+
+  // DEV: nach relevanten Interaktionen Diagnostics aktualisieren
+  function initDiagnosticsHooks() {
+    if (!enabled()) return;
+
+    // DEV-only styling: bottom-right, compact, readable
+    ensureDevToolsStyles();
+
+    // initial
+    updateDiagnostics('init');
+
+    // nach Clicks/Touches (nur lesen, keine Side-Effects)
+    document.addEventListener('click', () => {
+      requestAnimationFrame(() => updateDiagnostics('click'));
+    }, true);
+
+    document.addEventListener('touchend', () => {
+      requestAnimationFrame(() => updateDiagnostics('touchend'));
+    }, { passive: true, capture: true });
+
+    document.addEventListener('touchcancel', () => {
+      requestAnimationFrame(() => updateDiagnostics('touchcancel'));
+    }, { passive: true, capture: true });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDiagnosticsHooks);
+  } else {
+    initDiagnosticsHooks();
   }
 
   return { onStateChange };
 })();
-
+// #endregion
 /* ============================ END BLOCK 12 ============================ */
 
 /* ========================================================= */
@@ -1472,11 +1663,20 @@ document.addEventListener('click', function (event) {
     const href = jumpmark.getAttribute('href');
     if (!href || !href.startsWith('#')) return;
 
+    // Browser-Default verhindern (würde #... in die URL schreiben)
+    event.preventDefault();
+
+    // URL soll NICHT verändert werden (kein #entry-id...)
+    clearUrlHash();
+
     lastJumpmarkEl = jumpmark;
 
     const targetId = href.slice(1);
     const targetEl = document.getElementById(targetId);
     if (!targetEl) return;
+
+    // Scrollen ohne URL-Fragment
+    scrollToJumpTarget(targetEl);
 
     const entry =
       targetEl.classList.contains('entry')
