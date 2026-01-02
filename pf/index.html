@@ -3,13 +3,15 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
 <title>Pfadfinder</title>
 <link rel="stylesheet" href="_impl/pfadfinder.css">
 <link rel="icon" href="_impl/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="_impl/apple-touch-icon.png">
-<script src="_impl/pfadfinder.js?v=2026-01-02T14:09+01:00" defer></script>
+<script src="_impl/pfadfinder.js?v=2026-01-02T13:10+01:00" defer></script>
 </head>
-<body data-dev="true">
+<body data-dev="false">
 <a class="skip-link" href="#main-content">Zum Inhalt springen</a><header class="page-header"><div class="header-row">
 <svg xmlns="http://www.w3.org/2000/svg" class="header-icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.35"></circle><g transform="rotate(45 12 12)"><path d="M12 2 L10.25 12 L13.75 12 Z" fill="currentColor"></path><path d="M12 22 L10.25 12 L13.75 12 Z" fill="currentColor" opacity="0.35"></path></g></svg><div class="header-text">
 <h1>Pfadfinder</h1>
@@ -17,10 +19,12 @@
 </div>
 </div></header><div class="dev-tools"><button type="button" class="dev-dark-toggle">DEV Dark Mode</button></div>
 <div class="layout">
-<aside class="nav-pane"><div class="nav-root-exit"><button type="button" class="nav-root-button" aria-label="Zurück zur Gesamtübersicht">← Alle Informationen</button></div>
+<aside class="nav-pane"><div class="nav-sticky-head">
+<div class="nav-root-exit"><button type="button" class="nav-root-button" aria-label="Zurück zur Gesamtübersicht">← Alle Informationen</button></div>
 <div class="nav-fixed-parent" hidden="hidden"><button type="button" class="nav-fixed-parent-button" aria-labelledby="nav-fixed-parent-label nav-fixed-parent-hint"><span id="nav-fixed-parent-label"></span><span id="nav-fixed-parent-hint" class="sr-only">
-            Zurück zur Sammlung in der Gesamtübersicht
-          </span></button></div>
+              Zurück zur Sammlung in der Gesamtübersicht
+            </span></button></div>
+</div>
 <div class="nav-scroll">
 <nav aria-label="Sammlungen"><ul class="nav-root" role="tree" aria-label="Sammlungen" aria-multiselectable="false" aria-orientation="vertical">
 <li class="nav-item" id="nav-id1" data-label="Gesetze im Internet" data-pf-start="" role="none">
@@ -74,7 +78,7 @@
 </ul></nav><div class="nav-scope" hidden="hidden"></div>
 </div></aside><main id="main-content" tabindex="-1"><div class="content-wrap">
 <section class="home"><h2>
-        Oft genutzt
+        Direktstart Fachliche Weisungen
       </h2>
 <ul class="home-quicklinks">
 <li><button type="button" class="home-start-button" data-start-label="SGB I" aria-label="Start mit SGB I">SGB I</button></li>
@@ -91,14 +95,16 @@
           werden wie von Menschen ohne Behinderung. Das im Standardbrowser der Bundesagentur für
           Arbeit integrierte Diagnosetool <strong>Lighthouse</strong> bewertet die Erfüllung der
           Accessibility-Anforderungen mit 100 %.</li>
-<li>Eigenschaften des jeweils benutzten Endgeräts, vor allem von Smartphones und Tabletcomputer
-          werden durch entsprechende Anpassung der Seiteninhalte berücksichtigt (<nobr>Responsive</nobr>
-          Webdesign).</li>
 <li>Der Pfadfinder beachtet die Systemeinstellung nutzender Menschen für den Anzeigemodus
           Hell und Dunkel mit jeweils optimierter Darstellung.</li>
 <li>Mit einem optionalen Startparameter kann der Pfadfinder direkt mit einem gewünschten
-          Navigationsbereich gestarten werden (siehe unten).</li>
-<li>Der Pfadfinder ist jetzt auch unter einer Adresse im Internet aufrufbar (siehe unten).</li>
+          Navigationsbereich gestarten werden, siehe unten: Start mit Parameter.</li>
+<li>Die Bildschirmgröße des jeweils benutzten Endgeräts wird jetzt bei der Darstellung
+           berücksichtigt, von Smartphones und Tabletcomputern bis hin zu Desktop-Computern.
+           Die Seiteninhalte werden entsprechend angepasst (<nobr>Responsive</nobr> Webdesign).
+          Die funktionsgleiche Darstellung unter den am meisten verbreiteten Betriebssystemen ist
+          gewährleistet. Diese Neuerungen sind insbesondere für die private Nutzung des Pfadfinders
+          mit der Spiegeladresse im Internet relevant, siehe unten: Pfadfinder im Internet.</li>
 </ul>
 <h2>Start mit Parameter</h2>
 <p>Sie können den Pfadfinder direkt mit einem bestimmten Themenbereich starten. Ergänzen Sie
