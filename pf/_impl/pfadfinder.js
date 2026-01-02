@@ -940,7 +940,7 @@ document.addEventListener('keydown', e => {
    - setzt temporären Scroll-Lock (navScrollInProgress)
 */
 
-// 🔒 NEU: globaler Scroll-Lock (wird von anderen Blöcken gelesen)
+// 🔒 NEU: globaler Scroll-Gate (wird von Block 8 gelesen)
 let navScrollInProgress = false;
 
 function scrollActiveLeafIntoView(activeItem) {
@@ -949,7 +949,6 @@ function scrollActiveLeafIntoView(activeItem) {
 
   const containerRect = scrollContainer.getBoundingClientRect();
   const itemRect = activeItem.getBoundingClientRect();
-
   const containerHeight = containerRect.height;
 
   /* Komfortzone: mittlere 50 % */
@@ -962,16 +961,13 @@ function scrollActiveLeafIntoView(activeItem) {
   }
 
   /* Zielposition: Item sanft Richtung Mitte bewegen */
-  const itemCenter =
-    itemRect.top + itemRect.height / 2;
+  const itemCenter = itemRect.top + itemRect.height / 2;
+  const containerCenter = containerRect.top + containerHeight / 2;
+  const delta = itemCenter - containerCenter;
 
-  const containerCenter =
-    containerRect.top + containerHeight / 2;
-
-  const delta =
-    itemCenter - containerCenter;
-
-  // 🔒 NEU: Scroll-Phase markieren
+  /* --------------------------------------------------------------
+     🔒 Scroll-Gate aktivieren (VOR Scroll!)
+     -------------------------------------------------------------- */
   navScrollInProgress = true;
 
   scrollContainer.scrollBy({
@@ -979,16 +975,15 @@ function scrollActiveLeafIntoView(activeItem) {
     behavior: 'smooth'
   });
 
-  /*
-     🔓 NEU: Scroll-Lock kontrolliert lösen
-     - scrollend ist (noch) nicht überall zuverlässig
-     - daher: requestAnimationFrame + kurzer Timeout
-     - bewusst defensiv, nur für Touch-Szenarien relevant
-  */
+  /* --------------------------------------------------------------
+     🔓 Scroll-Gate exakt nach Reflow freigeben
+     - 1 Animation-Frame für Layout / Scroll
+     - kurzer Timeout für iOS Hit-Test Flush
+     -------------------------------------------------------------- */
   requestAnimationFrame(() => {
     setTimeout(() => {
       navScrollInProgress = false;
-    }, 120);
+    }, 80); // bewusst minimal, nicht timingkritisch
   });
 }
 // #endregion
@@ -1056,7 +1051,7 @@ function scrollActiveLeafIntoView(activeItem) {
 
   if (!isDevMode()) return;
 
-  const BUILD_INFO = 'Build: 20260102-0056PM-CET';
+  const BUILD_INFO = 'Build: 20260102-0102PM-CET';
 
   const devTools = document.querySelector('.dev-tools');
   if (!devTools) return;
