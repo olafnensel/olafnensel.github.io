@@ -1257,8 +1257,8 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 }
 
 .home ul {
-  margin: 1rem 0 1rem;
-  padding-left: 2rem;
+  margin: 1rem 0 1.5rem;
+  padding-left: 1.5rem;
 }
 
 .home li {
