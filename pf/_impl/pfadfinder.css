@@ -1237,11 +1237,15 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 }
 
 .home>h2 {
-  margin: 0 0 1rem;
+  margin: 1.2em 0 0.75rem;
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.3;
   color: var(--heading-h2);
+}
+
+.home h2:first-of-type {
+  margin-top: 0em;
 }
 
 .home h3 {
@@ -1253,8 +1257,8 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 }
 
 .home ul {
-  margin: 0.5rem 0 1rem;
-  padding-left: 1.25rem;
+  margin: 1rem 0 1rem;
+  padding-left: 2rem;
 }
 
 .home li {
@@ -1289,10 +1293,6 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 .home .meta {
   font-size: 0.85em;
   color: var(--text-muted-weak);
-}
-
-.home .example {
-  line-height: 2em;
 }
 
 @supports selector(body:has(.collection-section.active)) {

@@ -983,7 +983,7 @@ function scrollActiveLeafIntoView(activeItem) {
 */
 
 // 🔧 MANUELLER BUILD-TIMESTAMP (ISO-8601, lokale Zeit)
-const BUILD_TIMESTAMP = '2026-01-02T12:46+01:00';
+const BUILD_TIMESTAMP = '2026-01-03T13:23+01:00';
 
 function renderDevBuildInfo() {
   if (!isDevMode()) return;
@@ -1005,7 +1005,7 @@ function renderDevBuildInfo() {
     devTools.appendChild(info);
   }
 
-  info.textContent = `Build: ${BUILD_TIMESTAMP}`;
+  info.textContent = `JS-Build: ${BUILD_TIMESTAMP}`;
 }
 
 // DOM-sicher initialisieren
