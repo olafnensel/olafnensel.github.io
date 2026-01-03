@@ -1292,7 +1292,7 @@ body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-sh
 }
 
 .home .example {
-  margin-bottom: 1.5em;
+  line-height: 2em;
 }
 
 @supports selector(body:has(.collection-section.active)) {
