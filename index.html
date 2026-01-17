@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Olaf Nensel im Internet</title>
+
+  <script>
+    (function () {
+      // Fallback für Safari/XML: prefers-color-scheme kann in XML/XSLT-Rendering ignoriert werden.
+      // Wir setzen dann eine Klasse am <html>, die CSS ebenfalls auswerten kann.
+      function apply() {
+        try {
+          var m = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+          var isDark = !!(m && m.matches);
+          var root = document.documentElement;
+          if (!root) return;
+          root.classList.toggle("force-dark", isDark);
+          root.classList.toggle("force-light", !isDark);
+        } catch (e) {
+          // no-op
+        }
+      }
+
+      apply();
+
+      try {
+        var mq = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)");
+        if (mq && typeof mq.addEventListener === "function") {
+          mq.addEventListener("change", apply);
+        } else if (mq && typeof mq.addListener === "function") {
+          mq.addListener(apply);
+        }
+      } catch (e) {
+        // no-op
+      }
+    })();
+  </script>
+
+  <style>
+    /* ========================================================= */
+    /* 1) ROOT – Design Tokens */
+    /* ========================================================= */
+    :root {
+      --font-base:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+      /* Light Mode */
+      --color-bg: #ffffff;
+      --color-text: #1d1d1f;
+      --color-muted: #6e6e73;
+      --color-accent: #0a58ca;
+
+      --heading-h1: #2c2c2e;
+    }
+
+    /* ========================================================= */
+    /* 2) Dark Mode (System) + Fallback-Klasse (Safari/XML) */
+    /* ========================================================= */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #1c1c1e;
+        --color-text: #f5f5f7;
+        --color-muted: #a1a1a6;
+        --color-accent: #7da6ff;
+
+        --heading-h1: #f5f5f7;
+      }
+    }
+
+    html.force-dark {
+      --color-bg: #1c1c1e;
+      --color-text: #f5f5f7;
+      --color-muted: #a1a1a6;
+      --color-accent: #7da6ff;
+
+      --heading-h1: #f5f5f7;
+    }
+
+    /* ========================================================= */
+    /* 3) GLOBAL RESET / BODY */
+    /* ========================================================= */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      color-scheme: light dark;
+      background: var(--color-bg);
+    }
+
+    body {
+      font-family: var(--font-base);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--color-text);
+      background: var(--color-bg);
+    }
+
+    /* ========================================================= */
+    /* 4) LAYOUT */
+    /* ========================================================= */
+    main {
+      max-width: 68ch;
+      margin: 2rem auto;
+      padding: env(safe-area-inset-top) 1rem env(safe-area-inset-bottom);
+    }
+
+    @media (max-width: 600px) {
+      main {
+        max-width: 100%;
+      }
+    }
+
+    /* ========================================================= */
+    /* 5) HEADING */
+    /* ========================================================= */
+    h1 {
+      margin: 0 0 1.75rem; /* mehr Abstand zur Liste */
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--heading-h1);
+    }
+
+    /* ========================================================= */
+    /* 6) LINKS */
+    /* ========================================================= */
+    a {
+      color: var(--color-accent);
+      text-decoration: none;
+      overflow-wrap: anywhere; /* lange URLs umbrechen */
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    a:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      border-radius: 3px;
+    }
+
+    /* ========================================================= */
+    /* 7) LISTE – Einträge als 2 Blockzeilen (Beschreibung + URL) */
+    /* ========================================================= */
+    .link-list {
+      margin: 0;              /* Abstand kommt über h1 + li */
+      padding-left: 1.2rem;   /* Bullet-Indent */
+    }
+
+    .link-item {
+      margin: 0 0 1.25rem;    /* mehr Abstand zwischen den LI */
+    }
+
+    .link-desc {
+      display: block;         /* eigener Block */
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .link-url {
+      display: block;         /* eigener Block */
+      font-size: 0.98em;
+    }
+
+    /* Optional: URL optisch etwas ruhiger, aber weiterhin Linkfarbe */
+    .link-url .url-text {
+      color: var(--color-muted);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Olaf Nensel im Internet</h1>
+
+    <ul class="link-list">
+      <li class="link-item">
+        <span class="link-desc">Wordpress-Blog</span>
+        <a class="link-url" href="https://olafnensel.wordpress.com">
+          <span class="url-text">https://olafnensel.wordpress.com</span>
+        </a>
+      </li>
+
+      <li class="link-item">
+        <span class="link-desc">Mastodon-Profil</span>
+        <a class="link-url" href="https://mastodon.social/@olafnensel">
+          <span class="url-text">https://mastodon.social/@olafnensel</span>
+        </a>
+      </li>
+
+      <li class="link-item">
+        <span class="link-desc">Pfadfinder – Navigationsassistent für das Intranet der Bundesagentur für Arbeit</span>
+        <a class="link-url" href="pf/index.html">
+          <span class="url-text">https://olafnensel.github.io/pf/</span>
+        </a>
+      </li>
+    </ul>
+  </main>
+</body>
+</html>

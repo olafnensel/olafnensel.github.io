@@ -1,0 +1,2263 @@
+/* ========================================================= */
+/* PFADFINDER – BASIS-CSS                                    */
+/* ========================================================= */
+/* */
+/* ========================================================= */
+/* A TOKENS                                                  */
+/* ========================================================= */
+/* #region */
+/* --------------------------------------------------------- */
+/* 1. TOKENS – BASE (LIGHT)                                  */
+/* --------------------------------------------------------- */
+:root {
+  --font-base:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  /* Base Colors (Light Mode) */
+  --color-text: #1d1d1f;
+  --color-muted: #6e6e73;
+  --color-border: #e5e5ea;
+  --color-bg: #ffffff;
+  --color-accent: #007aff;
+
+  /* Scrollbars (internal containers): default (Light) */
+  --scrollbar-track: rgba(0, 0, 0, 0.06);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.28);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.40);
+
+  --header-height: 6.5rem;
+
+  /* Layout sizing */
+  --content-wrap-max: 68ch; /* Lesespalte (max) */
+
+  /* Responsive Breakpoint – SOURCE OF TRUTH (Doku/JS/alles außerhalb MQ)
+     ---------------------------------------------------------------
+     Der Breakpoint soll mit der Lesbarkeit skalieren (ch/rem).
+
+     Wichtig:
+     - Media Queries können Custom Properties nicht zuverlässig verwenden.
+       Deshalb MUSS der Wert in @media(...) als `calc(...)` dupliziert werden.
+
+     Keep in sync:
+     - Token:   --layout-breakpoint == calc(var(--content-wrap-max) + var(--layout-breakpoint-addon))
+     - MQ-Lit.: calc(68ch + 15.5rem)
+     - MQ+ε:    calc(68ch + 15.5001rem)  (kleines Epsilon, um Overlap zu vermeiden)
+  */
+  --layout-breakpoint-addon: 15.5rem;
+  --layout-breakpoint: calc(var(--content-wrap-max) + var(--layout-breakpoint-addon));
+
+  /* Einheitliche Klick- & Highlight-Zone */
+  --nav-hit-padding-x: .75rem;
+  --nav-hit-padding-y: 5px;
+  --nav-hit-gap: 0.6em; /* Standard-Abstand Icon ↔ Label (Nav-Buttons) */
+
+  /* Einheitliche Vertikal-Geometrie in Pixeln (verhindert 1px-Jumps durch Subpixel-Rounding) */
+  --nav-row-gap-y: 2px;          /* Abstand zwischen Nav-Zeilen (li / Sticky-Head-Wrapper) */
+  --nav-row-min-height: 30px;    /* 20px line-box (1.25 * 16px) + 10px padding (2×5px) */
+
+  /* Navigation pane tokens */
+  --nav-pane-bg: rgba(0, 0, 0, 0.03);
+  --nav-pane-bg-solid: #f7f7f7;
+
+  /* Navigation sizing (skalierend mit Schriftgröße) */
+  --nav-pane-width: 15rem;       /* vorher: 240px */
+  --nav-pane-max-width: 16.25rem; /* vorher: 260px */
+
+  /* Navigation state tokens */
+  --nav-active-bg: rgba(0, 0, 0, 0.08);
+  --nav-context-bg: rgba(0, 0, 0, 0.05);
+  --nav-hover-bg: rgba(0, 122, 255, 0.14);
+  --nav-active-color: var(--color-accent);
+
+   /* Chevron vor Parents */
+  --nav-chevron-scale: 1.35; /* probieren 1.25–1.6 */
+  --nav-chevron-opacity: 0.8; /* Chevron-Deckkraft (Root-Parent + Fixed-Parent) */
+  --nav-chevron-y: -0.08em; /* geschlossen: optische Vertikaljustierung (Chevron etwas hochziehen) */
+  --nav-chevron-y-open: 0.02em; /* geöffnet (90deg): tiefer, damit in der Textzeile zentriert */
+  --nav-chevron-x: 0em; /* geschlossen: horizontale Optik-Korrektur */
+  --nav-chevron-x-open: 0.17em; /* geöffnet (90deg): etwas nach rechts, damit unter geschlossenem Chevron fluchtet */
+
+  /* Root-Backlink Arrow (inline SVG sprite via <svg><use>, offline-safe) */
+  --nav-root-arrow-x: -0.4ex; /* Finetuning: Pfeil minimal nach links */
+  --nav-root-arrow-y: 0em;
+  --nav-root-gap-adjust: -1.1ex; /* Finetuning: Label minimal nach links (reduziert gap) */
+
+  /* Typography tokens */
+  --text-primary: var(--color-text);
+  --text-primary-weight: 400;
+  --text-primary-line-height: 1.55;
+
+  /* H1 */ 
+  --h1-color: #2c2c2e; /* Light */
+  --h1-font-weight: 600;
+
+  /* H2 */  
+  --h2-color: #2c2c2e;
+  --h2-font-weight: 500;
+
+  /* H3 */
+  --h3-color: #3a3a3c;
+  --h3-font-weight: 700;
+  --h3-size: 1em;
+  --h3-scale: 1;
+
+  /* Code */
+  --code-bg: #f2f3f5;
+  --code-text: #1d1d1f;
+
+  /* Secondary Control */
+  --text-secondary: var(--color-muted);
+  --text-secondary-size: 0.9em;
+  --text-secondary-weight: 400;
+
+  /* Meta Information */
+  --text-muted-weak: var(--color-muted);
+  --text-muted-size: 0.8em;
+  --text-muted-weight: 400;
+
+
+  /* Spacing tokens */
+  --gap-inline-tight: 0.35em;
+  --gap-inline-loose: 0.6em;
+  --gap-block-small: 0.75rem;
+  --gap-block-medium: 3rem;
+
+  /* Link tokens */
+  --link-color: var(--color-accent);
+  --link-hover-decoration: underline;
+  --link-focus-outline: 2px solid var(--color-accent);
+  --link-focus-offset: 2px;
+  --link-secondary-color: var(--text-secondary);
+
+  /* Focus/Control surfaces */
+  --jumpmark-focus-bg: rgba(0, 0, 0, 0.04);
+  --skip-link-bg: rgba(0, 0, 0, 0.05);
+
+  /* DEV: force-dark focus boost */
+  --dev-nav-focus-bg: rgba(125, 166, 255, 0.18);
+
+  /* DEV overlay panel */
+  --dev-overlay-bg: rgba(0, 0, 0, 0.72);
+  --dev-overlay-text: #fff;
+  --dev-overlay-border: rgba(255, 255, 255, 0.14);
+}
+
+/* Windows: Headings etwas kräftiger */
+html.platform-win{
+  --h1-font-weight: 600;
+  --h2-font-weight: 600;
+  --h3-font-weight: 500;
+}
+
+/* --------------------------------------------------------- */
+/* 1.1 TOKENS – SYSTEM DARK (DEFAULT, OHNE DEV OVERRIDE)     */
+/* --------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  html:not(.force-light):not(.force-dark) {
+    --color-bg: #1c1c1e;
+    --color-text: #f5f5f7;
+    --color-muted: #a1a1a6;
+    --color-border: #3a3a3c;
+    --color-accent: #0a84ff;
+
+    --h1-color: #f5f5f5;
+    --h2-color: #f5f5f5;
+    --h3-color: #d1d1d6;
+
+    --nav-pane-bg: rgba(255, 255, 255, 0.06);
+    --nav-pane-bg-solid: #2c2c2e;
+    --nav-context-bg: rgba(255, 255, 255, 0.08);
+    --nav-active-bg: rgba(255, 255, 255, 0.12);
+    --nav-hover-bg: rgba(10, 132, 255, 0.22);
+
+    --code-bg: rgba(255, 255, 255, 0.08);
+    --code-text: #f5f5f7;
+
+    --jumpmark-focus-bg: rgba(255, 255, 255, 0.10);
+    --skip-link-bg: rgba(255, 255, 255, 0.10);
+
+    --scrollbar-track: rgba(255, 255, 255, 0.08);
+    --scrollbar-thumb: rgba(255, 255, 255, 0.26);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.34);
+  }
+}
+
+/* --------------------------------------------------------- */
+/* 1.2 TOKENS – DEV/OVERRIDE: force-dark                     */
+/* --------------------------------------------------------- */
+/*
+   Wichtig:
+   - greift auf html.force-dark (tatsächlich aktiv)
+   - Headings fast weiß, aber NIE rein weiß
+*/
+html.force-dark {
+  --color-bg: #1c1c1e;
+  --color-text: #f5f5f7;
+  --color-muted: #a1a1a6;
+  --color-border: #3a3a3c;
+  --color-accent: #0a84ff;
+
+  --h1-color: #f5f5f7;
+  --h2-color: #f5f5f7;
+  --h3-color: #d1d1d6;
+
+  --code-text: #f5f5f7;
+  --code-border: rgba(255, 255, 255, 0.18);
+  --code-bg: rgba(255, 255, 255, 0.10);
+
+  --nav-pane-bg: rgba(255, 255, 255, 0.06);
+  --nav-pane-bg-solid: #2c2c2e;
+  --nav-active-bg: rgba(255, 255, 255, 0.12);
+
+  /* Kontext-Hintergrund (Root-Current, Scope-Parent) */
+  --nav-context-bg: rgba(255, 255, 255, 0.08);
+
+  /* Hover-Tint (Sidebar Blue) */
+  --nav-hover-bg: rgba(10, 132, 255, 0.22);
+
+  --jumpmark-focus-bg: rgba(255, 255, 255, 0.10);
+  --skip-link-bg: rgba(255, 255, 255, 0.10);
+
+  --scrollbar-track: rgba(255, 255, 255, 0.08);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.26);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.34);
+}
+/* #endregion */
+/* ========================================================= */
+/* ENDE A TOKENS                                             */
+/* ========================================================= */
+
+/* ========================================================= */
+/* B BASE                                                    */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* B.1 TYPOGRAPHY BASE                                       */
+/* --------------------------------------------------------- */
+
+/* Headings */
+h1 {
+  color: var(--h1-color);
+  font-weight: var(--h1-font-weight);
+}
+
+h2 {
+  color: var(--h2-color);
+  font-weight: var(--h2-font-weight);
+}
+
+h3 {
+  font-size: calc(var(--h3-size) * var(--h3-scale));
+  color: var(--h3-color);
+  font-weight: var(--h3-font-weight);
+}
+
+/* Inline code */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.95em;
+  padding: 0.15em 0.35em;
+  border: 1px solid transparent;
+  border-radius: 0.25em;
+  white-space: nowrap;
+
+  background-color: var(--code-bg);
+  color: var(--code-text);
+}
+
+html.force-dark code {
+  border-color: var(--code-border);
+}
+
+/* Block code */
+pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  font-size: 0.9rem;
+  overflow-x: auto;
+
+  white-space: pre-wrap;
+  /* erlaubt Umbruch */
+  overflow-wrap: anywhere;
+  /* bricht lange Tokens */
+  word-break: break-word;
+  /* Fallback */
+
+  padding: 2ch;
+}
+
+html.force-dark pre {
+  border-color: var(--code-border);
+}
+
+/* --------------------------------------------------------- */
+/* B.2 DOCUMENT BASE                                         */
+/* --------------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  font-size: 1rem; /* base size (matches browser default; respects user font settings) */
+  line-height: 1.55;
+  color: var(--color-text);
+  background: var(--color-bg);
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------- */
+/* B.3 GLOBAL TEXT BEHAVIOR                                  */
+/* --------------------------------------------------------- */
+/*
+   Voraussetzungen:
+   - <html lang="de"> (oder passende Sprache)
+   - wirkt nur bei mehrzeiligem Text
+
+   Ziel:
+   - bessere Lesbarkeit bei schmalen Viewports
+   - keine manuellen &shy; nötig
+*/
+
+html {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+
+  color-scheme: light dark;
+
+  /* verhindert hässliche Wortabbrüche */
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Fließtext erlaubt */
+.entry,
+.entry-trail,
+.entry-trail-full,
+.home p,
+.home li {
+  hyphens: auto;
+}
+
+/* UI / Navigation deaktiviert */
+nav,
+.nav-pane,
+button,
+.entry-title,
+.header-text,
+.jumpmarks,
+.trail-mode-control {
+  hyphens: none;
+}
+
+/* --------------------------------------------------------- */
+/* B.4 GLOBAL UTILITIES                                      */
+/* --------------------------------------------------------- */
+
+/* sr-only */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
+/* --------------------------------------------------------- */
+/* B.5 GLOBAL INTERACTION BASE                               */
+/* --------------------------------------------------------- */
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+/* Hover */
+a:hover {
+  text-decoration: var(--link-hover-decoration);
+}
+
+/* Tastatur-Fokus */
+a:focus-visible {
+  outline: var(--link-focus-outline);
+  outline-offset: var(--link-focus-offset);
+  border-radius: 3px;
+}
+
+/* #endregion */
+/* ======================= END B =========================== */
+
+/* ========================================================= */
+/* C LAYOUT                                                  */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* C.1 PAGE HEADER                                           */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - Icon als Marker links
+   - H1 + Subline als gemeinsamer Textblock
+   - Subline beginnt unter dem Text („Pfadfinder“), nicht Icon
+   - Icon optisch auf H1-Zeile ausrichten (nicht Block-Mitte)
+*/
+
+.page-header {
+  box-sizing: border-box;
+  height: var(--header-height);
+
+  display: flex;
+  align-items: center;
+
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  border-bottom: 1px solid var(--color-border);
+
+  flex: 0 0 var(--header-height);
+
+  /* Icon soll wie H1 wirken (currentColor) */
+  color: var(--h1-color);
+}
+
+/* Header: gesamter Titelbereich ist klickbar (Home), aber ohne Link-Optik */
+.page-header .header-home {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Nur beim Hover den „Hand“-Cursor zeigen (ohne zusätzliche Link-Optik) */
+@media (hover: hover) and (pointer: fine) {
+  .page-header .header-home:hover {
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
+
+/* Header Row: Icon + Textblock */
+.header-row {
+  display: flex;
+  align-items: flex-start;
+
+  /* em-Basis wie H1, damit das Icon korrekt skaliert */
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+/* Header Icon */
+.header-icon {
+  width: 0.9em;
+  height: 0.9em;
+
+  margin-right: 0.6ch;
+
+  /* optische Ausrichtung zur H1-Zeile (nicht zur Blockmitte) */
+  margin-top: 0.1rem;
+  transform: translateY(0.07em);
+
+  color: currentColor;
+  pointer-events: none;
+
+  flex: 0 0 auto;
+  display: inline-block;
+}
+
+/* Header Textblock */
+.header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* H1 im Header */
+.header-text h1 {
+  margin: 0;
+
+  font-size: 1.6rem;
+  font-weight: var(--h1-font-weight);
+  line-height: 1.2;
+
+  color: var(--h1-color);
+}
+
+/* Subline */
+.header-text .header-subline {
+  margin-top: 0.25rem;
+  padding-left: 0.05em;
+
+  font-size: 0.9rem;
+  line-height: 1.4;
+
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------- */
+/* C.2 MAIN LAYOUT CONTAINER                                 */
+/* --------------------------------------------------------- */
+
+.layout {
+  flex: 1 1 auto;
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* --------------------------------------------------------- */
+/* C.2a PAGE SCROLL SHELL (body no scroll)       */
+/* --------------------------------------------------------- */
+/*
+   Voraussetzung im HTML:
+   - <div class="page-scroll"> umschließt .layout + .page-footer
+
+   Ziel:
+   - Body scrollt nicht (overflow: hidden)
+   - Stattdessen scrollt NUR die Shell unter dem Header
+   - Footer ist Teil der Shell und wird erst am Ende sichtbar
+*/
+.page-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Internal scrollbar theming (Firefox) */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* In der Scroll-Shell darf das Layout NICHT selbst clippen – sonst bricht sticky. */
+.page-scroll .layout {
+  flex: 1 0 auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+/* --------------------------------------------------------- */
+/* C.3 RESPONSIVE LAYOUT CONTAINER                           */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - Mobile Stack: Navigation oben, Content darunter
+   - einheitlicher Abstand zum Viewport
+   - Navigation intern scrollbar
+   - kein doppelter/asymmetrischer Rand
+*/
+
+/* BREAKPOINT (MQ literal; keep in sync with --layout-breakpoint)
+   MQ: calc(68ch + 15.5rem)
+*/
+@media (max-width: calc(68ch + 15.5rem)) {
+
+  /* Seite darf wieder scrollen + einzige Quelle für Seitenabstand */
+  body {
+    overflow: auto;
+
+    /* Basis-Abstand (funktioniert überall, auch file://) */
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Mobile: keine zusätzliche Scroll-Shell (verhindert Nested-Scroll-Probleme) */
+  .page-scroll {
+    flex: 0 0 auto;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Optional: echte iOS Safe-Area-Unterstützung */
+  @supports (padding: env(safe-area-inset-left)) {
+    body {
+      padding-left: calc(0.75rem + env(safe-area-inset-left));
+      padding-right: calc(0.75rem + env(safe-area-inset-right));
+    }
+  }
+
+  /* Layout stapeln – kein eigener Seitenabstand */
+  .layout {
+    flex-direction: column;
+    gap: 1rem;
+
+    padding: 0.75rem 0;
+    /* nur vertikal */
+    width: 100%;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  /* Navigation: volle Breite innerhalb des Body-Paddings */
+  .layout .nav-pane {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+
+    border-radius: 12px;
+
+    /* Höhe begrenzen, damit Content sichtbar bleibt */
+    max-height: 50vh;
+
+    /* Pane selbst bleibt stabil; Scrollen passiert im Nav-Body (.nav-scroll) */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .layout .nav-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Content: kein eigener Seitenabstand */
+  body main {
+    overflow: visible;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Content-Wrapper ebenfalls neutral */
+  body .content-wrap {
+    padding: 0;
+  }
+}
+
+/* #endregion */
+/* ======================= END C =========================== */
+
+/* ========================================================= */
+/* D NAVIGATION                                              */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* D.1 PANE CONTAINER                                        */
+/* --------------------------------------------------------- */
+/*
+   Enthält die komplette Navigation (Root + Scope).
+   Abgrenzung erfolgt ausschließlich über Hintergrundfarbe
+   und Border-Radius – ohne Rahmen oder Schatten.
+*/
+
+.nav-pane {
+  flex: 0 0 var(--nav-pane-width);
+  max-width: var(--nav-pane-max-width);
+  display: flex;
+  position: relative;
+  isolation: isolate;
+  flex-direction: column;
+  border-radius: 10px;
+
+  background: var(--nav-pane-bg-solid);
+
+  /* Scrollen NICHT am Pane selbst (Safari/Sticky-Layer-Bugs),
+     sondern ausschließlich im Nav-Body (.nav-scroll). */
+  min-height: 0;
+  overflow: hidden;
+  align-self: stretch;
+}
+
+/* BREAKPOINT (MQ literal; keep in sync with --layout-breakpoint)
+   MQ: calc(68ch + 15.5001rem) (+ε)
+*/
+/* Desktop: Navigation bleibt unter dem Header stehen und löst sich erst am Ende der Scroll-Shell */
+@media (min-width: calc(68ch + 15.5001rem)) {
+  .page-scroll .nav-pane {
+    position: sticky;
+    top: 1rem; /* entspricht dem Top-Padding der .layout */
+    align-self: flex-start;
+
+    /* Pane-Höhe begrenzen, damit .nav-scroll intern scrollen kann */
+    max-height: calc(100vh - var(--header-height) - 2rem);
+    max-height: calc(100dvh - var(--header-height) - 2rem);
+  }
+}
+
+/* --------------------------------------------------------- */
+/* D.1a STICKY HEAD (ROOT-EXIT + FIXED PARENT)               */
+/* --------------------------------------------------------- */
+
+.nav-sticky-head {
+  /* Robust gegen Safari-Flex/Scroll-Layering:
+     Head bleibt immer oben und darf niemals vom Nav-Body übermalt werden. */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  /* sicherstellen, dass der Head im Flex-Layout nicht schrumpft */
+  flex: 0 0 auto;
+
+  background: var(--nav-pane-bg-solid);
+
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+  overflow: hidden;
+
+  /* exakt wie .nav-scroll */
+  padding: 0 .5rem;
+}
+
+/* Wrapper: standardmäßig AUS (nur im Scope an) */
+.nav-root-exit,
+.nav-fixed-parent {
+  display: none;
+  margin: 0;  /* keine Extra-Abstände am Wrapper */
+  padding: 0; /* Padding gehört an den Button, nicht an den Wrapper */
+}
+
+/* Wrapper: im Scope EIN */
+body.nav-focus-mode .nav-root-exit,
+body.nav-focus-mode .nav-fixed-parent {
+  display: block;
+  margin: var(--nav-row-gap-y) 0;
+}
+
+/* Abstand Sticky-Head → Nav-Body wie im Root-Tree (nicht addieren) */
+body.nav-focus-mode .nav-fixed-parent {
+  margin-bottom: 0;
+}
+
+/* Root-Backlink + Fixed-Parent Button: gleiche Geometrie/Hit-Area wie Nav-Items */
+.nav-root-button,
+.nav-fixed-parent-button {
+  all: unset;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: var(--nav-hit-gap);
+
+  width: 100%;
+  cursor: pointer;
+
+  padding: var(--nav-hit-padding-y) var(--nav-hit-padding-x);
+  border-radius: 6px;
+  line-height: 1.25;
+}
+
+/* Root-Backlink: link-like Optik (anders als Nav-Items), aber volle Hit-Area */
+.nav-root-button {
+  font-size: 0.9em;
+  color: var(--color-muted);
+  text-decoration: none;
+
+  /* Finetuning: Label etwas näher an den linken Rand (ohne Button-Padding zu ändern) */
+  gap: calc(var(--nav-hit-gap) + var(--nav-root-gap-adjust));
+
+  /* Row-Höhe an Nav-Items angleichen, obwohl der Text etwas kleiner ist:
+     0.9em * 1.39 ≈ 1.25em (Nav-Item Line-Box) → verhindert "Zucken" nach Schriftgrößen-Änderungen */
+  line-height: 1.25;                 /* wie Nav-Items */
+  min-height: var(--nav-row-min-height);
+
+  /* Optische Zentrierung OHNE Geometrieänderung */
+  padding-top: calc(var(--nav-hit-padding-y) + 1px);
+  padding-bottom: calc(var(--nav-hit-padding-y) - 1px);
+}
+
+/* Root-Backlink Arrow: inline SVG sprite via <svg class="nav-root-arrow"><use .../></svg>
+   Ziel:
+   - gleiche, feste Icon-Box wie bei Chevron (font-metrik-unabhängig)
+   - optische Feinausrichtung über Tokens (x/y)
+   - fill/stroke defaults are now defined in the inline sprite (<g ...>), CSS sets only color/geometry.
+*/
+.nav-root-button .nav-root-arrow,
+.nav-root-button > .nav-root-arrow {
+  display: block;
+
+  /* feste Icon-Box → keine Font-Metrik-Abhängigkeit */
+  flex: 0 0 1.25em;
+  width: 1em;
+  height: 1em;
+
+  /* Farbe konsistent über currentColor (Dark/Light + Hover) */
+  color: currentColor;
+
+  transform: translateX(var(--nav-root-arrow-x)) translateY(var(--nav-root-arrow-y));
+}
+
+/* Text-Span des Root-Backlinks (XSL: .nav-root-label) */
+.nav-root-button .nav-root-label{
+  min-width: 0;
+}
+
+/* Fixed-Parent: soll optisch wie ein normaler Parent-Button im Root-Mode wirken */
+.nav-fixed-parent-button {
+  /* kleine optische Zentrierung (Finetuning) */
+  padding-top: calc(var(--nav-hit-padding-y) + 0px);
+  padding-bottom: calc(var(--nav-hit-padding-y) - 0px);
+}
+
+/* Fixed-Parent: Chevron-Span wie bei Root-Nav (Spaltenbreite + Aussehen) */
+.nav-fixed-parent-button > .nav-icon {
+  width: 1ch;
+  flex: 0 0 1ch;
+  text-align: center;
+
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+/* Fixed-Parent Chevron (immer offen) + Scale über Token */
+.nav-fixed-parent-button > .nav-icon::before {
+  content: '›';
+  display: inline-block;
+  transform-origin: 50% 50%;
+  transform: translateX(var(--nav-chevron-x-open)) translateY(var(--nav-chevron-y-open)) rotate(90deg) scale(var(--nav-chevron-scale));
+  opacity: var(--nav-chevron-opacity);
+}
+
+/* Hover: Root wie Link (Underline), Fixed-Parent wie Nav-Item (Background) */
+@media (hover: hover) and (pointer: fine) {
+  .nav-fixed-parent-button:hover {
+    background: var(--nav-hover-bg);
+  }
+
+  /* Root-Backlink: nur der Text wird unterstrichen (kein "zerstückeltes" Underline am Pfeil) */
+  .nav-root-button:hover {
+    background: transparent;
+    text-decoration: none;
+  }
+
+  .nav-root-button:hover .nav-root-label {
+    text-decoration: underline;
+  }
+}
+
+/* Fokus identisch zu Leaf-Fokus */
+.nav-root-button:focus-visible,
+.nav-fixed-parent-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* --------------------------------------------------------- */
+/* D.2 SCROLL AREA                                           */
+/* --------------------------------------------------------- */
+
+.nav-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  /* Der Nav-Body ist der EINZIGE Scroll-Container in der Pane */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Verhindert Scroll-Chaining / "Rubber band"-Effekte,
+     die sonst dazu führen können, dass der Body (oder andere Container)
+     mitscrollt und der Head scheinbar "unter" den Nav-Body gerät. */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* Stacking explizit unter den Sticky-Head legen */
+  position: relative;
+  z-index: 0;
+
+  /* Visuelle Ruhe: Highlight klebt nicht am Rand */
+  padding: 0 .5rem;
+
+  /* Internal scrollbar theming (Windows needs explicit styling for scrollable elements) */
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-width: thin;
+}
+
+/* WebKit/Blink: style scrollbars for internal scroll containers (Chrome/Edge/Safari) */
+.nav-scroll::-webkit-scrollbar,
+.page-scroll::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.nav-scroll::-webkit-scrollbar-track,
+.page-scroll::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.nav-scroll::-webkit-scrollbar-thumb,
+.page-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-scroll::-webkit-scrollbar-thumb:hover,
+  .page-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+}
+
+/* --------------------------------------------------------- */
+/* D.3 TREE STRUCTURE                                        */
+/* --------------------------------------------------------- */
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav li {
+  margin: var(--nav-row-gap-y) 0;
+}
+
+/* --------------------------------------------------------- */
+/* D.4 BUTTON GEOMETRY                                       */
+/* --------------------------------------------------------- */
+
+.nav-pane .nav-item > button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: var(--nav-hit-padding-y) var(--nav-hit-padding-x);
+  line-height: 1.25;
+
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- */
+/* D.5 STATES (ACTIVE/CONTEXT/HOVER/FOCUS/SELECTED)          */
+/* --------------------------------------------------------- */
+/*
+   Hinweis:
+   - Tokens liegen in A TOKENS:
+     --nav-active-bg, --nav-context-bg, --nav-active-color
+
+   Ziel:
+   - ACTIVE (nach Auswahl / Fokus im Content): ruhig, neutral-grau
+   - SELECTED (während Auswahl / Fokus in der Navigation): dezenter Blau-Tint (wie macOS Sidebar)
+   - kein Rahmen/Border, flächig
+*/
+
+/* --------------------------------------------------------- */
+/* ACTIVE / CURRENT (ruhig, neutral)                         */
+/* --------------------------------------------------------- */
+
+/* ACTIVE LEAF – sofort (mode-unabhängig) */
+.nav-pane .nav-item.active > button {
+  background: var(--nav-active-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+/* ROOT-MODE – Root-Current (persistent) */
+/* Root-Parent = Kontext → minimal */
+body:not(.nav-focus-mode) .nav-item.is-root-current:not(.is-root-leaf) > button {
+  background: var(--nav-context-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+/* Root-Leaf = aktives Ziel → wie ACTIVE */
+body:not(.nav-focus-mode) .nav-item.is-root-current.is-root-leaf > button {
+  background: var(--nav-active-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+/* SCOPE-MODE – Scope-Parent & Scope-Leaf */
+/* Scope-Parent = Kontext → minimal */
+body.nav-focus-mode .nav-item.is-scope-parent > button {
+  background: var(--nav-context-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+/* Aktives Scope-Leaf = Ziel → wie ACTIVE */
+body.nav-focus-mode .nav-item.is-scope-leaf.active > button {
+  background: var(--nav-active-bg);
+  color: var(--color-text);
+  font-weight: 500;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------- */
+/* Hover / Focus                                             */
+/* --------------------------------------------------------- */
+
+/* Hover (blue tint, selektiert)
+   Hover nur auf echten Hover-Devices (verhindert iOS "sticky hover") */
+@media (hover: hover) and (pointer: fine) {
+  .nav-pane .nav-item > button:hover {
+    background: var(--nav-hover-bg);
+  }
+}
+
+/* Fokus (Tastatur) – klarer Ring */
+.nav-pane .nav-item > button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  font-weight: 600;
+}
+
+/* Defensive: kein Nav-Item darf über dem Sticky-Head liegen (Safari-Quirk-Guard). */
+.nav-pane .nav-item,
+.nav-pane .nav-item > button {
+  position: relative;
+  z-index: 0;
+}
+
+/* --------------------------------------------------------- */
+/* D.6 ICON + LABEL                                          */
+/* --------------------------------------------------------- */
+
+.nav-pane .nav-icon {
+  width: 1ch;
+  flex: 0 0 1ch;
+  text-align: center;
+}
+
+.nav-pane .nav-label {
+  flex: 1 1 auto;
+}
+
+/* Hierarchie-Einrückung: NUR Label, nie Button */
+.nav-item .nav-item>button .nav-label {
+  padding-left: 1.5ch;
+}
+
+/* --------------------------------------------------------- */
+/* D.7 PARENT TOGGLE (CHEVRON)                               */
+/* --------------------------------------------------------- */
+
+/* Parent-Buttons: Chevron-Spalte einplanen (ohne Leaf-Labels zu verschieben) */
+.nav-toggle {
+  padding-left: calc(var(--nav-hit-padding-x) + 1ch + 0.6em);
+  padding-right: var(--nav-hit-padding-x);
+}
+
+/* Chevron soll NICHT „mitfetten“ oder aufhellen, wenn der Parent aktiv/kontextuell wird */
+.nav-toggle > .nav-icon {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+/* Chevron-Glyph (inkl. Scale über Token) */
+.nav-toggle > .nav-icon::before {
+  content: '›';
+  display: inline-block;
+  transform-origin: 50% 50%;
+  /* default: geschlossen */
+  transform: translateX(var(--nav-chevron-x)) translateY(var(--nav-chevron-y)) rotate(0deg) scale(var(--nav-chevron-scale));
+  opacity: var(--nav-chevron-opacity);
+  transition: transform 0.15s ease;
+}
+
+/* geöffnet: nur Rotation ändern, Scale bleibt identisch */
+.nav-toggle[aria-expanded="true"] > .nav-icon::before {
+  transform: translateX(var(--nav-chevron-x-open)) translateY(var(--nav-chevron-y-open)) rotate(90deg) scale(var(--nav-chevron-scale));
+}
+
+
+/* --------------------------------------------------------- */
+/* D.8 ROOT MODE (EXPAND/COLLAPSE)                           */
+/* --------------------------------------------------------- */
+
+.nav-item>.nav-children {
+  display: none;
+  margin-left: 0;
+  /* ❗️keine Layout-Verschiebung mehr */
+}
+
+.nav-item.open>.nav-children {
+  display: block;
+}
+
+/* --------------------------------------------------------- */
+/* D.9 SCOPE MODE (VISIBILITY ONLY)                          */
+/* --------------------------------------------------------- */
+/*
+   Regelt ausschließlich, welche Teile des Baums im Scope-Mode sichtbar sind.
+
+   UI/Optik für Root-Backlink und Fixed-Parent liegt in D.1a:
+   - .nav-root-exit / .nav-root-button
+   - .nav-fixed-parent / .nav-fixed-parent-button
+*/
+
+/* NAVIGATION – SCOPE-MODE */
+body.nav-focus-mode .nav-item.is-hidden {
+  display: none;
+}
+
+/* Scope-Parent selbst nicht als normales Tree-Item zeigen
+   (er wird oben als Fixed-Parent gespiegelt) */
+body.nav-focus-mode .nav-item.is-scope-parent > button {
+  display: none;
+}
+
+/* Standard: Children im Scope aus (nur die des Scope-Parents an) */
+body.nav-focus-mode .nav-item > .nav-children {
+  display: none;
+}
+
+body.nav-focus-mode .nav-item.is-scope-parent > .nav-children {
+  display: block;
+}
+
+/* #endregion */
+/* ======================= END D =========================== */
+
+/* ========================================================= */
+/* E CONTENT                                                 */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* E.1 MAIN CONTAINER                                        */
+/* --------------------------------------------------------- */
+/*
+   Rolle dieses Blocks:
+   - trennt Header-Zone und Content-Zone explizit
+   - EIN EINZIGER vertikaler Startabstand
+   - unabhängig von Jumpmarks und Entry-Struktur
+   - robust gegen lange/untrennbare Strings
+*/
+
+main {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  /* ❌ KEINE Breitenbegrenzung mehr hier */
+  max-width: none;
+  margin: 0;
+
+  /* Fokus-Luft bleibt */
+  box-sizing: border-box;
+  padding-inline: 0.35rem;
+}
+
+/* Wenn .page-scroll genutzt wird, scrollt die Shell – nicht <main>. */
+.page-scroll main {
+  overflow: visible;
+}
+
+/* --------------------------------------------------------- */
+/* E.2 SECTIONS (Collections)                                */
+/* --------------------------------------------------------- */
+
+/* Content-Sektionen */
+.collection-section {
+  display: none;
+}
+
+.collection-section.active {
+  display: block;
+}
+
+/* Collection Header */
+.collection-header {
+  margin-bottom: 0;
+  /* bewusst neutral */
+}
+
+.collection-header>h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Collection Body – EINZIGE Content-Grenze */
+.collection-body {
+  margin-top: var(--gap-block-medium);
+}
+
+/* Jumpmarks dürfen die Grenze NICHT beeinflussen */
+.collection-body>.jumpmarks {
+  margin-top: 0;
+  margin-bottom: var(--gap-block-medium);
+}
+
+/* Einheitlicher Abstand vom Header zum ersten Inhalt */
+.collection-body> :first-child {
+  margin-top: var(--gap-block-medium);
+}
+
+/* Overflow-Schutz (nur Content, nicht Jumpmarks/Nav) */
+.entry-title,
+.entry-trail,
+.entry-trail a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* --------------------------------------------------------- */
+/* E.2a CONTENT → FOOTER RHYTHM (bottom spacing)             */
+/* --------------------------------------------------------- */
+/* Ziel:
+   - Abstand vom letzten Content-Element zum Footer
+     entspricht dem Abstand zwischen zwei .entry-Blocks.
+*/
+.collection-body {
+  padding-bottom: 1.5rem;
+}
+
+@media (min-width: 60rem) {
+  .collection-body {
+    padding-bottom: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .collection-body {
+    padding-bottom: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------- */
+/* E.3 CONTENT WRAP (Leselänge)                              */
+/* --------------------------------------------------------- */
+
+.content-wrap {
+  max-width: var(--content-wrap-max);
+  margin: 0.1rem auto 0;
+}
+
+/* --------------------------------------------------------- */
+/* E.4 JUMPMARKS                                             */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - sekundäre Steuerung, kein Container
+   - Nähe zu H2 durch Stil, NICHT durch Geometrie
+   - KEINE Box-/Rahmen-/Navigation-Anmutung
+*/
+
+.jumpmarks {
+  margin-inline: 0;
+  padding: 0;
+
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+
+  border: none;
+  background: none;
+  border-radius: 0;
+}
+
+/* Jumpmark-Links */
+.jumpmarks a {
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+
+  display: inline-block;
+  padding: 0.05em 0.2em;
+  border-radius: 3px;
+}
+
+/* Fokus: Ring + leichtes Cushion */
+.jumpmarks a:focus-visible {
+  text-decoration: underline;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  background: rgba(0, 0, 0, 0.04);
+  background: var(--jumpmark-focus-bg);
+}
+
+/* Trennzeichen */
+.jumpmark-sep {
+  margin: 0 0.6ch;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------- */
+/* E.5 ENTRY – TYPOGRAFIE                                    */
+/* --------------------------------------------------------- */
+
+.entry-title {
+  margin: 0;
+  font-weight: var(--h3-font-weight);
+  line-height: 1.55;
+}
+
+.entry-title-sub {
+  color: var(--color-muted);
+}
+
+.entry-trail {
+  line-height: 1.55;
+}
+
+/* Entry-Trail Separator (›): muted, so steps remain clearly separated
+   even when links are rendered as plain text (e.g. disabled intranet links). */
+.entry-trail .trail-sep {
+  color: var(--text-secondary);
+  opacity: 0.9;
+}
+
+/* --------------------------------------------------------- */
+/* E.6 ENTRY-INNER – RHYTHMUS                                */
+/* --------------------------------------------------------- */
+
+.entry-inner {
+  display: flow-root;
+}
+
+.entry-inner>.entry-title+.entry-trail {
+  margin-top: 0;
+}
+
+.entry+.entry .entry-inner {
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 60rem) {
+  .entry+.entry .entry-inner {
+    margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .entry+.entry .entry-inner {
+    margin-top: 1.25rem;
+  }
+}
+
+/* --------------------------------------------------------- */
+/* E.7 ENTRY – TRAIL VISIBILITY                              */
+/* --------------------------------------------------------- */
+
+.entry-trail-full {
+  display: none;
+
+  color: var(--text-primary);
+  line-height: var(--text-primary-line-height);
+  font-weight: var(--text-primary-weight);
+}
+
+.entry-trail-short {
+  color: var(--text-primary);
+  line-height: var(--text-primary-line-height);
+  font-weight: var(--text-primary-weight);
+}
+
+.entry.is-full .entry-trail-short {
+  display: none;
+}
+
+.entry.is-full .entry-trail-full {
+  display: block;
+}
+
+/* --------------------------------------------------------- */
+/* E.8 ENTRY – TRAIL CONTROL / META                           */
+/* --------------------------------------------------------- */
+
+.entry-trail-toggle {
+  color: var(--text-secondary);
+  font-size: var(--text-secondary-size);
+  font-weight: var(--text-secondary-weight);
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.entry-trail-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.trail-meta {
+  color: var(--text-muted-weak);
+  font-size: var(--text-muted-size);
+  font-weight: var(--text-muted-weight);
+
+  margin-left: var(--gap-inline-loose);
+  white-space: nowrap;
+}
+
+.trail-meta a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+
+/* --------------------------------------------------------- */
+/* E.9 GLOBAL TRAIL MODE CONTROL                             */
+/* --------------------------------------------------------- */
+
+.trail-mode-control {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-inline-loose);
+
+  margin: 0.25rem 0 0.75rem;
+  font-size: var(--text-secondary-size);
+  color: var(--text-secondary);
+}
+
+.trail-mode-label {
+  white-space: nowrap;
+}
+
+.trail-mode-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.trail-mode-segment button {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+.trail-mode-sep {
+  color: var(--text-secondary);
+}
+
+.trail-mode-segment button[aria-pressed="false"]:hover {
+  text-decoration: underline;
+}
+
+.trail-mode-segment button[aria-pressed="true"] {
+  color: var(--text-primary);
+  cursor: default;
+  text-decoration: none;
+}
+
+.trail-mode-segment button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.trail-mode-segment button[aria-pressed="false"]:focus-visible {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------- */
+/* E.9a GLOBAL TRAIL MODE – VISIBILITY OVERRIDE              */
+/* --------------------------------------------------------- */
+
+body.trail-mode-full .entry-trail-short {
+  display: none;
+}
+
+body.trail-mode-full .entry-trail-full {
+  display: block;
+}
+
+body.trail-mode-full .entry-trail-toggle {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+body.trail-mode-short .entry-trail-full {
+  display: none;
+}
+
+body.trail-mode-short .entry-trail-short {
+  display: inline;
+}
+
+body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-full {
+  display: block;
+}
+
+body:not(.trail-mode-full):not(.trail-mode-short) .entry.is-full .entry-trail-short {
+  display: none;
+}
+
+/* --------------------------------------------------------- */
+/* E.10 ENTRY – MINI-BACKLINK                                */
+/* --------------------------------------------------------- */
+
+.entry-mini-backlink {
+  display: none;
+
+  margin-top: 0.75rem;
+
+  font-size: var(--text-secondary-size);
+  color: var(--text-secondary);
+
+  text-decoration: none;
+  white-space: nowrap;
+
+  opacity: 0.75;
+}
+
+.entry-mini-backlink[aria-hidden="true"],
+.entry-mini-backlink[hidden] {
+  display: none;
+}
+
+.entry-mini-backlink.is-active {
+  display: block;
+  width: fit-content;
+
+  padding: 0.05em 0.2em;
+  border-radius: 3px;
+}
+
+.entry-mini-backlink.is-active[aria-hidden="true"],
+.entry-mini-backlink.is-active[hidden] {
+  display: block;
+}
+
+.entry-mini-backlink.is-active:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+.entry-mini-backlink.is-active:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------- */
+/* E.11 HOME – STARTCONTENT                                  */
+/* --------------------------------------------------------- */
+
+.home {
+  display: block;
+}
+
+.home h2 {
+  margin: 1.2em 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--h2-color);
+  hyphens: none;
+}
+
+.home h2:first-of-type {
+  margin-top: 0em;
+}
+
+.home h3 {
+  margin: 1.75rem 0 0.75rem;
+}
+
+.home p {
+  margin: 0.75rem 0;
+}
+
+.home ul {
+  margin: 1rem 0 1.5rem;
+  padding-left: 3.9rem;
+}
+
+.home li {
+  margin: 0.25rem 0;
+}
+
+.home-quicklinks {
+  list-style: disc;
+  margin: 0.345rem 0;
+}
+
+.home code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, "Liberation Mono", monospace;
+  font-size: 0.9em;
+
+  padding: 0.15em 0.35em;
+  border-radius: 6px;
+
+  background-color: var(--code-bg);
+  color: var(--code-text);
+
+  border: none;
+  text-decoration: none;
+
+  vertical-align: 0.02em;
+
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.home .meta {
+  font-size: 0.85em;
+  color: var(--text-muted-weak);
+}
+
+@supports selector(body:has(.collection-section.active)) {
+
+  body:has(.collection-section.active) .home {
+    display: none;
+  }
+
+  body:not(:has(.collection-section.active)) .home {
+    display: block;
+  }
+}
+
+/* #endregion */
+/* ======================= END E =========================== */
+
+/* ========================================================= */
+/* F DEV                                                     */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* F.1 FORCE MODE (force-dark/light)                         */
+/* --------------------------------------------------------- */
+/*
+   Hinweis:
+   - Die Token-Definitionen für html.force-dark liegen in A TOKENS.
+   - Hier stehen nur DEV-spezifische visuelle Overrides.
+*/
+
+/* 17.2 Dark Mode – Tastatur-Fokus (visuell verstärkt)       */
+html.force-dark .nav-pane .nav-item > button:focus-visible {
+  background: var(--dev-nav-focus-bg);
+}
+
+/* --------------------------------------------------------- */
+/* F.2 DEV PANEL (Overlay)                                   */
+/* --------------------------------------------------------- */
+/*
+   DEV-Overlay:
+   - vollständig aus dem Dokumentfluss genommen
+   - beeinflusst weder Header noch Layout
+   - bleibt bei Scrollen sichtbar
+   - bottom-right, damit Navigation/Header frei bleiben
+   - Sichtbarkeit ausschließlich über body[data-dev]
+*/
+
+/* Default: DEV-Tools AUS */
+.dev-tools {
+  display: none;
+
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 9999;
+
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.4rem;
+
+  padding: 0.5rem 0.65rem;
+  margin: 0;
+  border-radius: 0.75rem;
+
+  max-width: min(92vw, 560px);
+  max-height: 40vh;
+  overflow: auto;
+
+  background: var(--dev-overlay-bg);
+  color: var(--dev-overlay-text);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--dev-overlay-border);
+}
+
+/* Nur explizit bei data-dev="true" sichtbar */
+body[data-dev="true"] .dev-tools {
+  display: flex;
+}
+
+.dev-tools .dev-dark-toggle {
+  align-self: flex-end;
+}
+
+.dev-tools .dev-build-info {
+  font-size: 12px;
+  line-height: 1.2;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
+/* Diagnostics text (must be inside the box) */
+.dev-tools .dev-diagnostics {
+  margin: 0;
+  padding: 0;
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.25;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  text-align: right;
+
+  width: 100%;
+}
+
+/* #endregion */
+/* ======================= END F =========================== */
+
+/* ========================================================= */
+/* G FOOTER                                                  */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* G.1 PAGE FOOTER                                           */
+/* --------------------------------------------------------- */
+/*
+   Ziel:
+   - globale Metainformation
+   - ruhig, sekundär, nicht konkurrenzierend
+   - semantisch klarer Abschluss der Seite
+*/
+
+.page-footer {
+  flex: 0 0 auto;
+
+  padding: 0.75rem 1.5rem 1rem;
+  border-top: 1px solid var(--color-border);
+
+  font-size: var(--text-muted-size);
+  color: var(--text-muted-weak);
+
+  text-align: left;
+
+  /* License badge tone – fallback (for browsers without color-mix) */
+  --license-badge-color: var(--text-muted-weak);
+  --license-badge-border: var(--color-border);
+
+  /* Theme toggle (Light/Dark/Auto) – fallback (for browsers without color-mix) */
+  --theme-toggle-track-bg: var(--nav-pane-bg);
+  --theme-toggle-track-border: var(--color-border);
+  --theme-toggle-pill-bg: var(--color-bg);
+  --theme-toggle-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+  --theme-toggle-label: var(--text-muted-weak);
+  --theme-toggle-label-active: var(--color-text);
+}
+
+/* Footer in Scroll-Shell: bei wenig Inhalt trotzdem unten, sonst am Ende sichtbar */
+.page-scroll .page-footer {
+  margin-top: auto;
+}
+
+/* BREAKPOINT (MQ literal; keep in sync with --layout-breakpoint)
+   MQ: calc(68ch + 15.5rem)
+*/
+/* Mobile: Footer soll denselben horizontalen Seitenabstand wie der übrige Inhalt haben.
+   Wichtig: Diese Regel muss NACH der Basis-Definition von `.page-footer` stehen, damit
+   sie das dort gesetzte `padding-left/right` zuverlässig überschreibt. */
+@media (max-width: calc(68ch + 15.5rem)) {
+  .page-footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.force-light):not(.force-dark) .page-footer,
+  html.force-dark .page-footer {
+    --license-badge-color: var(--text-muted-weak);
+    --license-badge-border: rgba(255, 255, 255, 0.22);
+
+    --theme-toggle-track-bg: rgba(255, 255, 255, 0.08);
+    --theme-toggle-track-border: rgba(255, 255, 255, 0.18);
+    --theme-toggle-pill-bg: rgba(255, 255, 255, 0.10);
+    --theme-toggle-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12);
+    --theme-toggle-label: var(--text-muted-weak);
+    --theme-toggle-label-active: var(--color-text);
+  }
+}
+
+/* Progressive enhancement: refine tones where color-mix() is supported */
+@supports (color: color-mix(in srgb, #000 50%, #fff 50%)) {
+  .page-footer {
+    --license-badge-color:  color-mix(in srgb, var(--text-muted-weak) 70%, #fff 30%);
+    --license-badge-border: color-mix(in srgb, var(--text-muted-weak) 65%, #fff 35%);
+
+    --theme-toggle-track-bg: color-mix(in srgb, var(--color-bg) 86%, var(--color-border) 14%);
+    --theme-toggle-track-border: color-mix(in srgb, var(--color-border) 70%, var(--color-bg) 30%);
+    --theme-toggle-pill-bg: color-mix(in srgb, var(--color-bg) 92%, #fff 8%);
+    --theme-toggle-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+    --theme-toggle-label: color-mix(in srgb, var(--text-muted-weak) 85%, var(--color-text) 15%);
+    --theme-toggle-label-active: var(--color-text);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not(.force-light):not(.force-dark) .page-footer,
+    html.force-dark .page-footer {
+      --license-badge-color:  color-mix(in srgb, var(--text-muted-weak) 75%, #000 25%);
+      --license-badge-border: color-mix(in srgb, var(--text-muted-weak) 70%, #000 30%);
+
+      --theme-toggle-track-bg: color-mix(in srgb, var(--color-bg) 80%, var(--color-border) 20%);
+      --theme-toggle-track-border: color-mix(in srgb, var(--color-border) 72%, var(--color-bg) 28%);
+      --theme-toggle-pill-bg: color-mix(in srgb, var(--color-bg) 92%, #fff 8%);
+      --theme-toggle-pill-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --theme-toggle-label: color-mix(in srgb, var(--text-muted-weak) 88%, var(--color-text) 12%);
+      --theme-toggle-label-active: var(--color-text);
+    }
+  }
+}
+
+.page-footer-text {
+  margin: 0;
+  line-height: 1.4;
+
+  /* Footer: links Lizenz (wrap), rechts Theme-Toggle (fix rechts) */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 2.25rem; /* Abstand zwischen Lizenzblock (links) und Theme-Toggle (rechts) */
+  row-gap: .35rem;
+  width: 100%;
+}
+
+.page-footer .license-left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+
+  /* Separatoren kommen per ::before – daher KEIN extra horizontal gap,
+     sonst wird der Abstand rechts vom Separator größer als links. */
+  gap: .35rem 0; /* row-gap | column-gap */
+
+  min-width: 0;
+
+  /* sorgt dafür, dass der Block im Grid wirklich links sitzt */
+  justify-self: start;
+  text-align: left;
+}
+
+/* Desktop-Mode: visuelle Separatoren zwischen den 3 Lizenz-Teilen
+   (symmetrisch: Separator sitzt VOR dem Item, nicht NACH dem vorherigen) */
+.page-footer .license-left > :not(:first-child)::before {
+  content: "|";
+  opacity: 0.8;
+  margin: 0 0.6ch;
+}
+
+/* Narrow-ish: NICHT mehr hart auf 3 Zeilen zwingen.
+   Ziel: Lizenz bleibt so lange wie möglich einzeilig/zweizeilig,
+   bevor wir wirklich in den 3-Zeilen-Stack wechseln.
+
+   WICHTIG:
+   - Keine „Zwischenzustände“ (Separatoren enger / Zeilenumbruch / später erst Stack).
+   - Separatoren bleiben bis zum Stack-Breakpoint unverändert.
+   - Stack + Separator-Ausblendung passieren synchron.
+*/
+@media (max-width: 40rem) {
+  /* etwas weniger Luft zwischen Lizenzblock (links) und Theme-Toggle (rechts) */
+  .page-footer-text {
+    align-items: start;
+    justify-items: start;
+    justify-content: start;
+
+    column-gap: 0.25rem;
+    row-gap: 0.1rem;
+  }
+
+  /* Lizenz: weiterhin WRAP, aber ohne harte Column-Stack-Regel */
+  .page-footer .license-left {
+    flex-wrap: wrap;
+
+    /* Separatoren kommen per ::before – daher KEIN extra horizontal gap,
+       sonst wird der Abstand links/rechts vom Separator unsymmetrisch. */
+    gap: .25rem 0; /* row-gap | column-gap */
+
+    /* robust: niemals zentrieren */
+    width: auto;
+    text-align: left;
+    justify-self: start;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  /* Separatoren: bis zum Stack-Breakpoint konstant lassen */
+  .page-footer .license-left > :not(:first-child)::before {
+    margin: 0 0.6ch;
+  }
+
+  /* rechts bleibt rechts */
+  .page-footer .license-right {
+    justify-content: flex-end;
+    white-space: nowrap;
+  }
+}
+
+/* Stacked mode: etwas frueher schalten, damit kein Zwischen-Zeilenumbruch entsteht.
+   (mindestens 27.4rem: Stack + Separatoren-Ausblendung synchron.) */
+@media (max-width: 27.4rem) {
+  .page-footer .license-left {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.06rem;
+    width: 100%;
+  }
+
+  .page-footer .license-left > * {
+    display: block;
+    width: fit-content;
+    text-align: left;
+  }
+
+  /* In stacked mode: no inline separators */
+  .page-footer .license-left > :not(:first-child)::before {
+    content: none;
+    margin: 0;
+  }
+}
+
+
+/* --------------------------------------------------------- */
+/* G.3 THEME TOGGLE (Light / Dark / Auto)                    */
+/* --------------------------------------------------------- */
+/*
+   Markup (Footer, Buttons):
+   - Container: `.theme-toggle` (role="radiogroup")
+   - Buttons:  <button data-theme="light|dark|system|auto" role="radio">…</button>
+   - JS setzt den Zustand primär über: `aria-checked="true|false"`
+
+   Fallback/Legacy:
+   - Falls ein älterer Stand noch `aria-pressed="true|false"` verwendet,
+     unterstützt das CSS dies weiterhin.
+   - Guard-Regeln verhindern Doppel-Markierung, wenn alte und neue Attribute gemischt sind.
+*/
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  padding: 1px; /* Höhe an License-Badges angleichen */
+  border-radius: 999px;
+
+  background: var(--theme-toggle-track-bg);
+  border: 1px solid var(--theme-toggle-track-border);
+
+  /* optisch wie iOS/macOS Segmented Control */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.theme-toggle button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+
+  cursor: pointer;
+  user-select: none;
+
+  padding: 0.12em 0.45em; /* wie .license-badge */
+  border-radius: 999px;
+
+  font-size: 0.9em;
+  line-height: 1.3; /* wie .license-badge */
+  white-space: nowrap;
+
+  color: var(--theme-toggle-label);
+}
+
+/* Active segment (exactly one)
+   - Primary: aria-checked="true" (radio semantics)
+   - Fallback: aria-pressed="true" (legacy button semantics)
+*/
+.theme-toggle button[aria-checked="true"]:not([aria-pressed]),
+.theme-toggle button[aria-pressed="true"] {
+  background: var(--theme-toggle-pill-bg);
+  color: var(--theme-toggle-label-active);
+  box-shadow: var(--theme-toggle-pill-shadow);
+}
+
+/* Guard (mixed attributes):
+   If any button is driven via aria-pressed, ignore aria-checked-only flags
+   to avoid double-active states (e.g. legacy default aria-checked="true"). */
+@supports selector(.theme-toggle:has(button)) {
+  .theme-toggle:has(button[aria-pressed]) button[aria-checked="true"]:not([aria-pressed]) {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--theme-toggle-label) !important;
+  }
+}
+
+.theme-toggle button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Hover (nur echte Hover-Devices, kein "sticky hover" auf Touch) */
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle button:hover {
+    text-decoration: none;
+  }
+}
+
+
+/* --------------------------------------------------------- */
+/* G.2 LICENSE INLINE (ruhig, baseline-stabil)               */
+/* --------------------------------------------------------- */
+
+.license-bar {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.license-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.license-sep {
+  opacity: 0.8;
+}
+
+.license-label,
+.license-meta {
+  opacity: 0.8;
+}
+
+/* Badge-Form: gruppiert CC-Icons + Text (und MIT konsistent) */
+.license-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+
+  padding: 0.12em 0.45em;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+
+/* Text nicht hervorheben – soll sich in den Footer einfügen */
+.license-text {
+  font-weight: inherit;
+}
+
+/* Icons als Inline-Glyphs, an Textbaseline ausrichten */
+.license-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+
+  /* baseline alignment */
+  transform: translateY(0.13em);
+  margin-right: 0.15em;
+
+  /* use surrounding text color */
+  color: currentColor;
+}
+
+/* Abstand zwischen zwei aufeinanderfolgenden Icons */
+.license-icon + .license-icon {
+  margin-left: 0.15em;
+}
+
+/* License-Badges: tonal angepasst (light/dark) + minimal kräftiger + etwas kleiner */
+.page-footer .license-badge,
+.page-footer .license-badge:link,
+.page-footer .license-badge:visited,
+.page-footer .license-badge:hover,
+.page-footer .license-badge:active {
+  color: var(--license-badge-color);
+  border-color: var(--license-badge-border);
+
+  font-size: 0.9em !important;
+  font-weight: 500;
+}
+
+/* #endregion */
+/* ======================= END G =========================== */
+
+/* ========================================================= */
+/* H LINKS                                                   */
+/* ========================================================= */
+/* #region */
+
+/* --------------------------------------------------------- */
+/* H.1 LINK-LIKE CONTROLS (Buttons als Links)                */
+/* --------------------------------------------------------- */
+/*
+   Gilt für:
+   - .home-start-button
+   - .entry-trail-toggle
+   - Trail-Mode-Switch („verkürzt | vollständig“)
+*/
+
+button.home-start-button,
+.entry-trail-toggle,
+.trail-mode-segment button {
+  all: unset;
+  cursor: pointer;
+
+  color: var(--link-color);
+  font: inherit;
+  line-height: inherit;
+  white-space: nowrap;
+}
+
+/* Hover */
+button.home-start-button:hover,
+.entry-trail-toggle:hover,
+.trail-mode-segment button[aria-pressed="false"]:hover {
+  text-decoration: var(--link-hover-decoration);
+}
+
+/* Fokus */
+button.home-start-button:focus-visible,
+.entry-trail-toggle:focus-visible,
+.trail-mode-segment button:focus-visible {
+  outline: var(--link-focus-outline);
+  outline-offset: var(--link-focus-offset);
+  border-radius: 3px;
+}
+
+/* --------------------------------------------------------- */
+/* H.2 SECONDARY / META LINKS                                */
+/* --------------------------------------------------------- */
+
+.page-footer a {
+  color: var(--link-secondary-color);
+  text-decoration: none;
+}
+
+
+.trail-meta a:hover,
+.page-footer a:hover,
+.trail-meta a:focus-visible,
+.page-footer a:focus-visible {
+  text-decoration: underline;
+}
+
+
+/* --------------------------------------------------------- */
+/* H.3 INTRANET LINKS DISABLED (extern/?): render as text    */
+/* --------------------------------------------------------- */
+/*
+   JS setzt bei externem/unklarem Intranet-Status:
+   - class="is-intranet-disabled"
+   - aria-disabled="true"
+   - entfernt href (in data-href geparkt)
+
+   Ziel (CSS):
+   - optisch wie normaler Text, nicht wie Link
+   - keine Underlines / kein Hand-Cursor
+   - Text bleibt selektierbar/kopierbar
+*/
+
+a.is-intranet-disabled {
+  color: var(--text-primary) !important;
+  text-decoration: none !important;
+  cursor: default;
+}
+
+a.is-intranet-disabled:hover,
+a.is-intranet-disabled:active {
+  text-decoration: none !important;
+}
+
+a.is-intranet-disabled:focus,
+a.is-intranet-disabled:focus-visible {
+  outline: none !important;
+}
+
+/* #endregion */
+/* ======================= END H =========================== */
+
+/* ========================================================= */
+/* J A11Y                                                    */
+/* ========================================================= */
+/* #region */
+
+/*
+   Ziel:
+   - „Zum Inhalt springen“ ist für Tastatur-User sofort erreichbar
+   - im Normalzustand unsichtbar, erscheint bei Fokus
+   - ruhig, keine harte Box, aber klar erkennbar
+   - funktioniert in Light/Dark ohne separate Farbwelten
+*/
+/* Skip-Link: Zum Inhalt springen */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 0.75rem;
+
+  /* nur bei Fokus sichtbar */
+  opacity: 0;
+  pointer-events: none;
+
+  /* typografisch wie UI-Link, aber als Control */
+  font-size: 0.9rem;
+  line-height: 1.2;
+
+  padding: 0.45em 0.75em;
+  border-radius: 10px;
+
+  color: var(--color-accent);
+  background: var(--skip-link-bg);
+
+  text-decoration: none;
+
+  /* über Header/Content */
+  z-index: 1100;
+
+  /* sanft */
+  transform: translateY(-0.25rem);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* #endregion */
+/* ======================= END J =========================== */

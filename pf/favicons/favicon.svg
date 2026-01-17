@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <title>Pfadfinder Favicon</title>
+
+  <!-- White compass background (inside the ring) -->
+  <circle cx="512" cy="512" r="416" fill="#fff" />
+
+  <!-- Outer compass ring (stroke is centered; inner edge is exactly r=416) -->
+  <circle cx="512" cy="512" r="433.5" fill="none" stroke="#111" stroke-width="35" />
+
+  <!-- Compass needle (tips touch the inner edge of the ring, matching PNG exports) -->
+  <!-- Dark (NE) -->
+  <polygon points="804.5904 216.2859 562 561 464 460" fill="#111" />
+  <!-- Light (SW) -->
+  <polygon points="216.2859 804.5904 464 460 562 561" fill="#777" />
+</svg>
